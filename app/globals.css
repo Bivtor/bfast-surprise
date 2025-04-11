@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -17,6 +21,19 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+@keyframes carousel {
+  0%, 25% {
+    opacity: 1;
+  }
+  33%, 100% {
+    opacity: 0;
+  }
+}
+
+.animate-carousel {
+  animation: carousel 15s infinite;
 }
 
 body {
