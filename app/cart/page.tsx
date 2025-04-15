@@ -62,18 +62,18 @@ export default function CartPage() {
                     </p>
                   </div>
                   
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 text-black">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleUpdateQuantity(item.id, item.quantity, false)}
-                        className="p-1 rounded-full hover:bg-gray-100"
+                        className="p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer"
                       >
                         <MinusIcon className="h-5 w-5" />
                       </button>
                       <span className="w-8 text-center">{item.quantity}</span>
                       <button
                         onClick={() => handleUpdateQuantity(item.id, item.quantity, true)}
-                        className="p-1 rounded-full hover:bg-gray-100"
+                        className="p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer"
                       >
                         <PlusIcon className="h-5 w-5" />
                       </button>
@@ -81,7 +81,7 @@ export default function CartPage() {
                     
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-full"
+                      className="p-2 text-red-600 hover:bg-red-50 hover:cursor-pointer rounded-full"
                     >
                       <TrashIcon className="h-5 w-5" />
                     </button>
@@ -95,7 +95,7 @@ export default function CartPage() {
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
               
-              <div className="space-y-4">
+              <div className="space-y-4 text-gray-700">
                 <div className="flex justify-between">
                   <span>Items ({getTotalItems()})</span>
                   <span>${(totalPrice / 100).toFixed(2)}</span>

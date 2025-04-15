@@ -11,14 +11,14 @@ const CAROUSEL_IMAGES = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
-      <Navigation />
+      {/* <Navigation /> */}
       
       <div className="relative h-[70vh] bg-gray-900">
         {/* Hero banner */}
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="relative z-20 flex flex-col items-center justify-center h-full text-white px-4 text-center">
           <h1 className="text-4xl sm:text-6xl font-bold mb-6">
-            Breakfast Surprise
+            Berry Good Morning
           </h1>
           <p className="text-xl mb-8 max-w-2xl">
             Delight someone special with a magical breakfast experience delivered right to their door

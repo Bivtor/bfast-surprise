@@ -1,8 +1,17 @@
+"use client";
 import Navigation from '../components/Navigation'
 import Link from 'next/link'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
+import { useEffect } from 'react'
+import { useCartStore } from '../store/cartStore'
 
 export default function OrderConfirmationPage() {
+  const { clearCart } = useCartStore();
+
+  useEffect(() => {
+    clearCart();
+  }, [clearCart]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
