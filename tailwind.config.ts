@@ -1,17 +1,21 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: [
-      "./index.html",
-      "./src/**/*.{js,ts,jsx,tsx}", // adjust to your project
-    ],
-    theme: {
-      extend: {
-        colors: {
-          primary: "#ED4A5A",     // Raspberry red
-          secondary: "#88BFFF",   // Pastel UCLA blue
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./app/*.{js,ts,jsx,tsx}",
+    "app/*.tsx",
+    "app/page.tsx"
+  ],
+  theme: {
+    extend : {
+      colors: {
+        'berry-red': '#ed4a5a', // Raspberry red [#ed4a5a]
+        'uc-blue': {
+          light: '#A7C6ED', // Light UCLA blue
+          DEFAULT: '#88BFFF', // Pastel UCLA blue [#88BFFF]
         },
+        // 'primary' : '#F5F5F5', // Light gray
       },
-    },
-    plugins: [],
-  };
-  
+    }
+  },
+  plugins: [],
+};

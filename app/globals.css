@@ -36,6 +36,25 @@
   animation: carousel 15s infinite;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+}
+
+.fade-in.visible {
+  animation: fadeIn 1s ease-out forwards;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
