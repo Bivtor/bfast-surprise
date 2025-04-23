@@ -42,13 +42,54 @@ export async function POST(req: Request) {
 
       const orderId = orderResult.rows[0].id
 
-      // Insert order items
+      // Insert order items with their customizations
       for (const item of data.items) {
-        await client.query(
-          `INSERT INTO order_items (order_id, product_id, quantity) 
-           VALUES ($1, $2, $3)`,
-          [orderId, item.productId, item.quantity]
+        // Insert main order item
+        const itemResult = await client.query(
+          `INSERT INTO order_items (
+            order_id, 
+            product_id, 
+            quantity,
+            note,
+            item_price_cents
+          ) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+          [
+            orderId, 
+            item.id, 
+            item.quantity,
+            item.note || '',
+            item.price + (item.additions?.reduce((sum: number, addition: any) => sum + addition.price, 0) || 0)
+          ]
         )
+
+        const orderItemId = itemResult.rows[0].id
+
+        // Insert additions if any
+        if (item.additions?.length > 0) {
+          for (const addition of item.additions) {
+            await client.query(
+              `INSERT INTO order_item_additions (
+                order_item_id,
+                addition_id,
+                price_cents
+              ) VALUES ($1, $2, $3)`,
+              [orderItemId, addition.id, addition.price]
+            )
+          }
+        }
+
+        // Insert subtractions if any
+        if (item.subtractions?.length > 0) {
+          for (const subtraction of item.subtractions) {
+            await client.query(
+              `INSERT INTO order_item_subtractions (
+                order_item_id,
+                subtraction_id
+              ) VALUES ($1, $2)`,
+              [orderItemId, subtraction.id]
+            )
+          }
+        }
       }
 
       // Commit transaction

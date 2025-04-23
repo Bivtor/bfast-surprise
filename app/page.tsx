@@ -150,13 +150,13 @@ export default function Home() {
           </div>
 
           {/* Mobile layout */}
-          <div className="lg:hidden flex flex-col">
+          <div className="lg:hidden flex flex-col p-4">
             {/* Carousel at top */}
             <div className="relative h-[50vh]">
               {CAROUSEL_IMAGES.map((image, index) => (
                 <div
                   key={image.src}
-                  className="absolute inset-0 opacity-0 animate-carousel"
+                  className="absolute inset-0 opacity-0 animate-carousel rounded-2xl overflow-hidden"
                   style={{
                     animationDelay: `${index * 5}s`,
                   }}

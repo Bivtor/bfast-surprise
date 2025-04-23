@@ -18,11 +18,6 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link href="/careers" className="text-gray-500 hover:text-gray-900">
-                  Careers
-                </Link>
-              </li>
             </ul>
           </div>
           <div>

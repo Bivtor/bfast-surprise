@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BerryGoodMorning🍓",
+  title: "BerryGM",
   description: "have a berry good day!",
 };
 

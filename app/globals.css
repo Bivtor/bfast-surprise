@@ -24,10 +24,13 @@
 }
 
 @keyframes carousel {
-  0%, 25% {
+   0% {
+    opacity: 0;
+  }
+  4%, 25% {
     opacity: 1;
   }
-  33%, 100% {
+  29%, 100% {
     opacity: 0;
   }
 }
