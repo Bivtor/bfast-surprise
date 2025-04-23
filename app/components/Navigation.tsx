@@ -15,9 +15,12 @@ export default function Navigation() {
     <header className="inset-x-0 top-0 z-50 bg-white shadow">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5 text-2xl font-bold text-indigo-600">
-            Breakfast Surprise
-          </Link>
+        <Link href="/" className="block text-center sm:text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold">
+            <span className="text-[#ed4a5a]">Berry</span>
+            <span className="text-[#88BFFF]">GoodMorning</span>
+          </h1>
+        </Link>
         </div>
         <div className="flex lg:hidden">
           <button

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Footer from "./components/Footer";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { useEffect, useRef, ReactNode } from "react";
+import Navigation from "./components/Navigation";
 
 const CAROUSEL_IMAGES = [
   { src: "/breakfast1.jpg", alt: "Delicious breakfast spread" },
@@ -73,23 +74,39 @@ function FadeIn({ children, className = "" }: FadeInProps) {
 }
 
 export default function Home() {
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Small delay to ensure smooth scrolling after navigation loads
+    const timer = setTimeout(() => {
+      if (heroRef.current) {
+        window.scrollTo({ top: heroRef.current.offsetTop, behavior: 'smooth' });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <main className="min-h-screen bg-white relative rounded-b-lg">
       {/* Logo in top left/center */}
-      <div className="absolute top-0 left-0 w-full z-30 p-4">
+      {/* <div className="absolute top-0 left-0 w-full z-30 p-6 lg:px-8">
         <Link href="/" className="block text-center sm:text-left">
           <h1 className="text-2xl sm:text-3xl font-bold">
             <span className="text-[#ed4a5a]">Berry</span>
             <span className="text-[#88BFFF]">GoodMorning</span>
           </h1>
         </Link>
-      </div>
+      </div> */}
+      
       
       {/* Hero section with carousel */}
       <FadeIn>
+      
         <div className="relative min-h-screen">
+        <Navigation />
           {/* Desktop layout */}
-          <div className="hidden lg:flex h-screen">
+          <div ref={heroRef} className="hidden lg:flex h-screen">
             {/* Left side - Content */}
             <div className="w-1/2 flex flex-col justify-center px-12 text-center">
               <h2 className="text-6xl font-bold mb-6 text-black">
