@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Breakfast Surprise",
-  description: "Be delighted with a magical breakfast experience delivered right to your door",
+  title: "BerryGoodMorning🍓",
+  description: "have a berry good day!",
 };
 
 export default function RootLayout({
