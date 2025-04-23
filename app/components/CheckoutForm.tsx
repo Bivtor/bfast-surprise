@@ -106,7 +106,7 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
     e.preventDefault();
     setLoading(true);
 
-    if (!stripe || !elements) {
+    if (!stripe || !elements || !clientSecret) {
       return;
     }
 
@@ -123,6 +123,7 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
 
     const { error } = await stripe.confirmPayment({
       elements,
+      clientSecret,
       confirmParams: {
         return_url: `${window.location.origin}/success?amount=${amount}`,
       },
@@ -298,7 +299,7 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="mt-6 w-full inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-colors disabled:animate-pulse"
+        className="mt-6 w-full inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 hover:cursor-pointer disabled:opacity-50 transition-colors disabled:animate-pulse"
       >
         {!loading ? `Pay $${amount}` : "Processing..."}
       </button>
