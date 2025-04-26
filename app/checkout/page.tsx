@@ -1,26 +1,43 @@
 "use client";
 
-import Navigation from "@/app/components/Navigation";
-import convertToSubcurrency from '@/lib/convertToSubcurrency'
-import { useCartStore } from "../store/cartStore";
 import { Elements } from "@stripe/react-stripe-js";
+import Navigation from "../components/Navigation";
+import CheckoutForm from "../components/Checkout/CheckoutForm";
+import OrderSummaryContainer from "../components/OrderSummary/OrderSummaryContainer";
 import { loadStripe } from "@stripe/stripe-js";
-import CheckoutForm from "../components/CheckoutForm";
+import { useCartStore } from "../store/cartStore";
+import convertToSubcurrency from "@/lib/convertToSubcurrency";
+import { useEffect, useState } from "react";
+import { Product } from "../types/product";
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
   throw new Error("Stripe public key is not defined");
 }
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 export default function CheckoutPage() {
-  const { items, getTotalItems } = useCartStore();
+  const { getTotalPrice } = useCartStore();
+  const totalPrice = getTotalPrice();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const totalPrice = items.reduce((total, item) => {
-    return total + item.price * item.quantity;
-  }, 0);
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+        setLoading(false);
+      });
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-black">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -28,38 +45,31 @@ export default function CheckoutPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
-            {totalPrice > 0 ? <Elements stripe={stripePromise} options={{
-                mode: "payment",
-                amount: convertToSubcurrency(totalPrice),
-                currency: "usd"
-              }}>
+            {totalPrice > 0 ? (
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  mode: "payment",
+                  amount: convertToSubcurrency(totalPrice),
+                  currency: "usd",
+                }}
+              >
                 <CheckoutForm amount={totalPrice} />
-              </Elements>: <div>Nothing in Cart</div> }
-              
+              </Elements>
+            ) : (
+              <div className="bg-white shadow rounded-lg p-6 text-center text-gray-500">
+                Nothing in Cart
+              </div>
+            )}
           </div>
 
           <div className="lg:col-span-4">
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Order Summary
-              </h2>
-
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span>Items ({getTotalItems()})</span>
-                  <span>${(totalPrice / 100).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Delivery Fee</span>
-                  <span>$5.00</span>
-                </div>
-                <div className="border-t pt-4">
-                  <div className="flex justify-between font-semibold">
-                    <span>Total</span>
-                    <span>${totalPrice}</span>
-                  </div>
-                </div>
-              </div>
+            <div className="bg-white shadow-lg rounded-2xl">
+              <OrderSummaryContainer
+                products={products}
+                isOpen={true}
+                showCheckoutButton={false}
+              />
             </div>
           </div>
         </div>

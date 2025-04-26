@@ -1,20 +1,50 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { XMarkIcon } from '@heroicons/react/24/outline'
-import { useCartStore } from '../store/cartStore'
-import { Product, Addition, Subtraction, CartAddition, CartSubtraction } from '../types/product'
+import { XMarkIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
+import { useCartStore } from '../../store/cartStore'
+import { Product, Addition, Subtraction, CartAddition, CartSubtraction } from '../../types/product'
+import { useScrollLock } from '../../hooks/useScrollLock'
 
 interface AddToCartModalProps {
   isOpen: boolean
   onClose: () => void
   product: Product
+  editingItem?: {
+    uniqueId: string
+    additions: CartAddition[]
+    subtractions: CartSubtraction[]
+    note: string
+  }
 }
 
-export default function AddToCartModal({ isOpen, onClose, product }: AddToCartModalProps) {
-  const addItem = useCartStore((state) => state.addItem)
+export default function AddToCartModal({ isOpen, onClose, product, editingItem }: AddToCartModalProps) {
+  useScrollLock(isOpen)
+  
+  const { addItem, updateItemModifications } = useCartStore()
   const [selectedAdditions, setSelectedAdditions] = useState<CartAddition[]>([])
   const [selectedSubtractions, setSelectedSubtractions] = useState<CartSubtraction[]>([])
   const [note, setNote] = useState('')
+  const [quantity, setQuantity] = useState(1)
+
+  // Initialize state when editing an item
+  useEffect(() => {
+    if (editingItem) {
+      setSelectedAdditions(editingItem.additions || [])
+      setSelectedSubtractions(editingItem.subtractions || [])
+      setNote(editingItem.note || '')
+    }
+  }, [editingItem])
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      if (!editingItem) {
+        setSelectedAdditions([])
+        setSelectedSubtractions([])
+        setNote('')
+      }
+    }
+  }, [isOpen, editingItem])
 
   // Add ESC key handler
   useEffect(() => {
@@ -28,7 +58,7 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
     return () => window.removeEventListener('keydown', handleEscKey);
   }, [isOpen, onClose]);
 
-  const handleAddToCart = () => {
+  const handleSave = () => {
     addItem({
       id: product.id,
       name: product.name,
@@ -38,10 +68,6 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
       note
     })
     onClose()
-    // Reset state
-    setSelectedAdditions([])
-    setSelectedSubtractions([])
-    setNote('')
   }
 
   const toggleAddition = (addition: Addition) => {
@@ -64,6 +90,11 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
     })
   }
 
+  const handleQuantityChange = (delta: number) => {
+    const newQuantity = Math.max(1, quantity + delta)
+    setQuantity(newQuantity)
+  }
+
   const totalPrice = (product.price_cents + selectedAdditions.reduce((sum, addition) => sum + addition.price, 0))
 
   return (
@@ -75,7 +106,7 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] overflow-hidden"
             onClick={onClose}
           />
           
@@ -84,7 +115,7 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-x-0 bottom-0 sm:bottom-auto sm:top-24 z-[70] bg-white rounded-t-2xl sm:rounded-2xl p-6 sm:max-w-lg sm:mx-auto sm:h-[calc(100vh-12rem)] sm:overflow-hidden"
+            className="fixed inset-x-0 bottom-0 sm:bottom-auto sm:top-24 z-[70] bg-white rounded-t-2xl sm:rounded-2xl p-6 sm:max-w-lg sm:mx-auto max-h-[calc(100vh-6rem)] overflow-hidden"
           >
             <div className="absolute right-0 top-0 pr-4 pt-4">
               <button
@@ -97,10 +128,10 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
               </button>
             </div>
 
-            <div className="mt-3 h-full sm:overflow-y-auto">
+            <div className="h-full overflow-y-auto">
               <div className="space-y-6 pb-6">
                 <h3 className="text-lg font-semibold leading-6 text-gray-900">
-                  Customize {product.name}
+                  {editingItem ? 'Edit' : 'Customize'} {product.name}
                 </h3>
 
                 {product.additions && product.additions.length > 0 && (
@@ -112,7 +143,7 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
                           <input
                             type="checkbox"
                             className="h-4 w-4 rounded-lg border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                            checked={selectedAdditions.some(a => a.name === addition.name)}
+                            checked={selectedAdditions.some(a => a.id === addition.id)}
                             onChange={() => toggleAddition(addition)}
                           />
                           <span className="ml-2 text-sm text-gray-600">
@@ -157,32 +188,30 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-semibold text-gray-900">Total</span>
-                  <span className="text-base font-semibold text-gray-900">
-                    ${(totalPrice / 100).toFixed(2)}
-                  </span>
-                </div>
-
-                <div className="flex flex-col sm:flex-row-reverse gap-3">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                <div className="flex flex-col sm:flex-row gap-3 text-black">
+                  <div className="flex items-center justify-center px-4 py-2 bg-gray-100 rounded-full">
+                    <button
+                      onClick={() => handleQuantityChange(-1)}
+                      className={`p-1 rounded-full hover:bg-gray-200 hover:cursor-pointer disabled:opacity-50 transition-colors ${quantity <= 0 ? 'text-gray-400': ''}`}
+                      disabled={quantity <= 1}
+                    >
+                      <MinusIcon className="h-5 w-5" />
+                    </button>
+                    <span className="mx-2 text-lg font-medium w-8 text-center">{quantity}</span>
+                    <button
+                      onClick={() => handleQuantityChange(1)}
+                      className="p-1 rounded-full hover:bg-gray-200 transition-colors hover:cursor-pointer"
+                    >
+                      <PlusIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <button
                     type="button"
-                    className="flex-1 justify-center rounded-lg bg-indigo-600 px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
-                    onClick={handleAddToCart}
+                    className="flex-1 justify-center rounded-lg bg-indigo-600 px-3 py-3 text-sm font-normal text-white shadow-sm hover:bg-indigo-500 hover:cursor-pointer "
+                    onClick={handleSave}
                   >
-                    Add to Cart
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    type="button"
-                    className="flex-1 justify-center rounded-lg bg-white px-3 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    onClick={onClose}
-                  >
-                    Cancel
-                  </motion.button>
+                    {editingItem ? 'Save Changes' : `Add to Order  |  ${((totalPrice * quantity) / 100).toFixed(2)}`}
+                  </button>
                 </div>
               </div>
             </div>

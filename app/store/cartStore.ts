@@ -17,9 +17,33 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (item) => set((state) => ({
-        items: [...state.items, { ...item, quantity: 1, uniqueId: crypto.randomUUID() }]
-      })),
+      addItem: (item) => set((state) => {
+        // Check if an identical item already exists in the cart
+        const existingItem = state.items.find((cartItem) => {
+          const sameProduct = cartItem.id === item.id;
+          const sameAdditions = JSON.stringify(cartItem.additions) === JSON.stringify(item.additions);
+          const sameSubtractions = JSON.stringify(cartItem.subtractions) === JSON.stringify(item.subtractions);
+          const sameNote = cartItem.note === item.note;
+          
+          return sameProduct && sameAdditions && sameSubtractions && sameNote;
+        });
+
+        if (existingItem) {
+          // Update quantity of existing item
+          return {
+            items: state.items.map((cartItem) =>
+              cartItem.uniqueId === existingItem.uniqueId
+                ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                : cartItem
+            ),
+          };
+        }
+
+        // Add new item if no identical item exists
+        return {
+          items: [...state.items, { ...item, quantity: 1, uniqueId: crypto.randomUUID() }],
+        };
+      }),
       removeItem: (uniqueId) =>
         set((state) => ({
           items: state.items.filter((item) => item.uniqueId !== uniqueId),

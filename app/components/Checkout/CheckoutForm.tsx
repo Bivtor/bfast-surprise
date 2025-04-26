@@ -5,7 +5,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { useCartStore } from "../store/cartStore";
+import { useCartStore } from "../../store/cartStore";
 
 interface CheckoutFormProps {
   amount: number;

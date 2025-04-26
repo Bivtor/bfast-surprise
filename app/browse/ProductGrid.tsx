@@ -1,20 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import AddToCartModal from "../components/AddToCartModal";
+import AddToCartModal from "../components/Cart/AddToCartModal";
 import { Product } from "../types/product";
 
-export default function ProductGrid() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+interface ProductGridProps {
+  products: Product[];
+}
 
-  useEffect(() => {
-    fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((error) => console.error("Error fetching products:", error));
-  }, []);
+export default function ProductGrid({ products }: ProductGridProps) {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const handleAddToCartClick = (product: Product, event: React.MouseEvent) => {
     setSelectedProduct(product);
@@ -32,7 +28,6 @@ export default function ProductGrid() {
             key={product.id}
             onClick={(e) => handleAddToCartClick(product, e)}
             className="group relative bg-white rounded-lg border border-gray-200 overflow-hidden flex cursor-pointer hover:bg-gray-100 transition-colors duration-200"
-            // whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.2 }}
           >
             <div className="p-4 flex-[2]">
