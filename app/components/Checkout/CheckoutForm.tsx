@@ -28,20 +28,20 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
     customNote: "",
   });
 
-    useEffect(() => {
-      fetch("/api/payment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount,
-          items,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => setClientSecret(data.clientSecret));
-    }, [amount, items]);
+  useEffect(() => {
+    fetch("/api/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount,
+        items,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setClientSecret(data.clientSecret));
+  }, [amount, items]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const totalPrice = items.reduce((total, item) => {
@@ -255,7 +255,9 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
             className="resize-none mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {errors.deliveryAddress && (
-            <p className="mt-1 text-sm text-red-600">{errors.deliveryAddress}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.deliveryAddress}
+            </p>
           )}
         </div>
 
@@ -283,18 +285,35 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
         </div>
       )}
 
-      {clientSecret && <PaymentElement
-        className="py-10 w-full"
-        id="payment-element"
-        options={{
-          layout: "tabs",
-          wallets: {
-            applePay: "auto",
-            googlePay: "auto",
-          },
-        }}
-      />
-    }
+      <div className="flex gap-2">
+        {/* {[10, 15, 20, 25].map((percentage) => (
+          <button
+            key={percentage}
+            onClick={() => setTipPercentage(percentage)}
+            className={`flex-1 py-1 px-2 rounded ${
+              tipPercentage === percentage
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {percentage}%
+          </button>
+        ))} */}
+      </div>
+
+      {clientSecret && (
+        <PaymentElement
+          className="py-10 w-full"
+          id="payment-element"
+          options={{
+            layout: "tabs",
+            wallets: {
+              applePay: "auto",
+              googlePay: "auto",
+            },
+          }}
+        />
+      )}
 
       <button
         type="submit"

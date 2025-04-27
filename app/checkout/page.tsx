@@ -14,7 +14,7 @@ if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
   throw new Error("Stripe public key is not defined");
 }
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
 );
 
 export default function CheckoutPage() {
@@ -44,7 +44,20 @@ export default function CheckoutPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-8">
+          {/* Order Summary - will appear first on mobile */}
+          <div className="lg:col-span-4 order-first lg:order-last">
+            <div className="bg-white shadow-lg rounded-2xl">
+              <OrderSummaryContainer
+                products={products}
+                isOpen={true}
+                showCheckoutButton={false}
+                isCheckout={true}
+              />
+            </div>
+          </div>
+
+          {/* Checkout Form - will appear second on mobile */}
+          <div className="lg:col-span-8 order-last lg:order-first">
             {totalPrice > 0 ? (
               <Elements
                 stripe={stripePromise}
@@ -61,16 +74,6 @@ export default function CheckoutPage() {
                 Nothing in Cart
               </div>
             )}
-          </div>
-
-          <div className="lg:col-span-4">
-            <div className="bg-white shadow-lg rounded-2xl">
-              <OrderSummaryContainer
-                products={products}
-                isOpen={true}
-                showCheckoutButton={false}
-              />
-            </div>
           </div>
         </div>
       </main>

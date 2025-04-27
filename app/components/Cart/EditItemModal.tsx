@@ -185,7 +185,7 @@ export default function EditItemModal({ isOpen, onClose, product, editingItem }:
                   <div className="flex items-center justify-center px-4 py-2 bg-gray-100 rounded-full">
                     <button
                       onClick={() => handleQuantityChange(-1)}
-                      className={`p-1 rounded-full hover:bg-gray-200 disabled:opacity-50 transition-colors hover:cursor-pointer${quantity <= 0 ? 'text-gray-400' : ''}`}
+                      className={`p-1 rounded-full hover:bg-gray-200 disabled:opacity-10 transition-colors hover:cursor-pointer`}
                       disabled={quantity <= 0}
                     >
                       <MinusIcon className="h-5 w-5" />

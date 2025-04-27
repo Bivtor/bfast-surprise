@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CartItem, Product } from "../../types/product";
 import { useCartStore } from "../../store/cartStore";
 import EditItemModal from "../Cart/EditItemModal";
-import {motion, AnimatePresence} from "framer-motion";
+// import {motion, AnimatePresence} from "framer-motion";
 
 interface OrderSummaryProps {
   isOpen?: boolean;
@@ -34,11 +34,11 @@ export default function OrderSummary({
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-0 ">
         {items.map((item) => (
           <div
             key={item.uniqueId}
-            className="py-3 px-6 border-b border-gray-200 last:border-b-0 text-black text-sm"
+            className="py-4 px-6 mx-4 border-b border-gray-200 last:border-b-0 text-black text-sm "
           >
             {/* Basic item info - always visible */}
             <div className="flex items-center justify-between">

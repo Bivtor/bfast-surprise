@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { ShoppingBagIcon } from '@heroicons/react/24/outline'
+import { AnimatePresence, motion } from 'framer-motion'
 import ProductGrid from '@/app/browse/ProductGrid'
 import Navigation from '../components/Navigation'
 import OrderSummaryContainer from '../components/OrderSummary/OrderSummaryContainer'
@@ -76,19 +77,28 @@ export default function BrowsePage() {
         </div>
 
         {/* Mobile Cart Slide-up */}
-        {isMobileCartOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsMobileCartOpen(false)} />
-            <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-hidden">
-              <OrderSummaryContainer
-                products={products}
-                isOpen={true}
-                isMobile={true}
-                onClose={() => setIsMobileCartOpen(false)}
+        <AnimatePresence>
+          {isMobileCartOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-50 lg:hidden bg-black/40 backdrop-blur-sm"
+                onClick={() => setIsMobileCartOpen(false)}
               />
-            </div>
-          </div>
-        )}
+              <div className="fixed inset-0 z-[51] lg:hidden overflow-hidden">
+                <OrderSummaryContainer
+                  products={products}
+                  isOpen={true}
+                  isMobile={true}
+                  onClose={() => setIsMobileCartOpen(false)}
+                />
+              </div>
+            </>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   )

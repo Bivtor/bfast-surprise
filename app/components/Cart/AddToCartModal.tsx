@@ -192,7 +192,7 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
                   <div className="flex items-center justify-center px-4 py-2 bg-gray-100 rounded-full">
                     <button
                       onClick={() => handleQuantityChange(-1)}
-                      className={`p-1 rounded-full hover:bg-gray-200 hover:cursor-pointer disabled:opacity-50 transition-colors ${quantity <= 0 ? 'text-gray-400': ''}`}
+                      className={`p-1 rounded-full hover:bg-gray-200 hover:cursor-pointer disabled:opacity-10 transition-colors }`}
                       disabled={quantity <= 1}
                     >
                       <MinusIcon className="h-5 w-5" />
