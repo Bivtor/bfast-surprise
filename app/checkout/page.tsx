@@ -6,22 +6,22 @@ import CheckoutForm from "../components/Checkout/CheckoutForm";
 import OrderSummaryContainer from "../components/OrderSummary/OrderSummaryContainer";
 import { loadStripe } from "@stripe/stripe-js";
 import { useCartStore } from "../store/cartStore";
-import convertToSubcurrency from "@/lib/convertToSubcurrency";
 import { useEffect, useState } from "react";
 import { Product } from "../types/product";
+import { DEFAULT_TIP_PERCENTAGE } from "../constants/pricing";
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
   throw new Error("Stripe public key is not defined");
 }
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
-);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 export default function CheckoutPage() {
-  const { getTotalPrice } = useCartStore();
-  const totalPrice = getTotalPrice();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { items, clearCart, getTotalItems, getTotalPrice, getTip, updateTip} = useCartStore();
+  const [clientSecret, setClientSecret] = useState<string>();
+  const [tipPercentage, setTipPercentage] = useState(DEFAULT_TIP_PERCENTAGE);
+  const totalPrice = getTotalPrice();
 
   useEffect(() => {
     fetch("/api/products")
@@ -36,6 +36,23 @@ export default function CheckoutPage() {
       });
   }, []);
 
+
+  useEffect(() => {
+    console.log('getting new paymentIntent')
+    fetch("/api/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: getTotalPrice(),
+        items,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setClientSecret(data.clientSecret));
+  }, [getTotalPrice(), items]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -44,7 +61,6 @@ export default function CheckoutPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Order Summary - will appear first on mobile */}
           <div className="lg:col-span-4 order-first lg:order-last">
             <div className="bg-white shadow-lg rounded-2xl">
               <OrderSummaryContainer
@@ -56,18 +72,21 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Checkout Form - will appear second on mobile */}
           <div className="lg:col-span-8 order-last lg:order-first">
             {totalPrice > 0 ? (
               <Elements
                 stripe={stripePromise}
                 options={{
                   mode: "payment",
-                  amount: convertToSubcurrency(totalPrice),
+                  amount: totalPrice,
                   currency: "usd",
                 }}
               >
-                <CheckoutForm amount={totalPrice} />
+                <CheckoutForm
+                  loading={loading}
+                  setLoading={setLoading}
+                  clientSecret={clientSecret}
+                />
               </Elements>
             ) : (
               <div className="bg-white shadow rounded-lg p-6 text-center text-gray-500">

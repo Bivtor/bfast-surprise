@@ -11,7 +11,7 @@ export default function Navigation() {
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <header className="inset-x-0 top-0 z-50 bg-white shadow">
+    <header className="inset-x-0 top-0 z-50 ">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
         <Link href="/" className="block text-center sm:text-left">

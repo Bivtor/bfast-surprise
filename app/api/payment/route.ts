@@ -1,29 +1,31 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { calculateFinalPrice } from '../../../lib/calculateFinalPrice';
+import { DEFAULT_TIP_PERCENTAGE } from '../../constants/pricing';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-03-31.basil',
+});
 
 export async function POST(req: Request) {
   try {
     const data = await req.json();
     
-    // Calculate total amount including delivery fee and additions
-    const amount = data.items.reduce((total: number, item: any) => {
-      const itemPrice = item.price;
-      const additionsPrice = item.additions?.reduce((sum: number, addition: any) => sum + addition.price, 0) || 0;
-      return total + ((itemPrice + additionsPrice) * item.quantity);
-    }, 0) + 500; // Adding $5.00 delivery fee
+    // Calculate final amount using our shared function
+    const priceBreakdown = calculateFinalPrice(data.items, true, DEFAULT_TIP_PERCENTAGE);
 
-    console.log('going to query stripe')
-
-    // Create payment intent
+    // Create payment intent with the calculated total
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
+      amount: priceBreakdown.total,
       currency: 'usd',
       automatic_payment_methods: {
         enabled: true,
       },
       metadata: {
+        subtotal: priceBreakdown.subtotal,
+        tax: priceBreakdown.tax,
+        deliveryFee: priceBreakdown.deliveryFee,
+        tip: priceBreakdown.total - (priceBreakdown.subtotal + priceBreakdown.tax + priceBreakdown.deliveryFee),
         deliveryDate: data.deliveryDate,
         deliveryTime: data.deliveryTime,
         deliveryAddress: data.deliveryAddress,
@@ -36,6 +38,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
+      priceBreakdown,
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);

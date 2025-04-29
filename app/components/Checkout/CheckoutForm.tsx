@@ -1,90 +1,61 @@
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState} from "react";
 import {
   PaymentElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { useCartStore } from "../../store/cartStore";
+import { TIP_PERCENTAGES } from "@/app/constants/pricing";
+import { useCartStore } from "@/app/store/cartStore";
+import CustomTipModal from "./CustomTipForm";
+
+const TEST_MODE = process.env.NODE_ENV === "development";
+
+const TEST_DATA = {
+  purchaserEmail: "victorinaldi@ucla.edu",
+  purchaserPhone: "+18057227847",
+  recipientPhone: "+18057227847",
+  deliveryDate: (() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split("T")[0];
+  })(),
+  deliveryTime: "09:00",
+  deliveryAddress: "123 Test Street, San Francisco, CA 94103",
+  customNote: "This is a test order",
+};
 
 interface CheckoutFormProps {
-  amount: number;
+  loading?: boolean;
+  clientSecret?: string;
+  setLoading: (loading: boolean) => void;
 }
 
-export default function CheckoutForm({ amount }: CheckoutFormProps) {
+export default function CheckoutForm({
+  clientSecret,
+  loading,
+  setLoading
+}: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const router = useRouter();
-  const [clientSecret, setClientSecret] = useState<string>();
-  const { items, clearCart, getTotalItems } = useCartStore();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState({
-    purchaserEmail: "",
-    purchaserPhone: "",
-    recipientPhone: "",
-    deliveryDate: "",
-    deliveryTime: "",
-    deliveryAddress: "",
-    customNote: "",
-  });
+  const [customTipValueCents, setcustomTipValueCents] = useState<number>(0);
+  const [customTipValueSelected, setcustomTipValueSelected] = useState<boolean>(false);
+  const {getTotalPrice, updateTipPercentage, getTipPercentage, getSubtotal} = useCartStore();
+  const [formData, setFormData] = useState(
+    TEST_MODE
+      ? TEST_DATA
+      : {
+          purchaserEmail: "",
+          purchaserPhone: "",
+          recipientPhone: "",
+          deliveryDate: "",
+          deliveryTime: "",
+          deliveryAddress: "",
+          customNote: "",
+        }
+  );
 
-  useEffect(() => {
-    fetch("/api/payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        amount,
-        items,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => setClientSecret(data.clientSecret));
-  }, [amount, items]);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const totalPrice = items.reduce((total, item) => {
-    return total + item.price * item.quantity;
-  }, 0);
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.purchaserEmail) {
-      newErrors.purchaserEmail = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.purchaserEmail)) {
-      newErrors.purchaserEmail = "Invalid email format";
-    }
-
-    if (!formData.purchaserPhone) {
-      newErrors.purchaserPhone = "Phone number is required";
-    }
-
-    if (!formData.deliveryDate) {
-      newErrors.deliveryDate = "Delivery date is required";
-    } else {
-      const selectedDate = new Date(formData.deliveryDate);
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-
-      if (selectedDate < tomorrow) {
-        newErrors.deliveryDate = "Delivery date must be at least tomorrow";
-      }
-    }
-
-    if (!formData.deliveryTime) {
-      newErrors.deliveryTime = "Delivery time is required";
-    }
-
-    if (!formData.deliveryAddress) {
-      newErrors.deliveryAddress = "Delivery address is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const [isCustomTipModalOpen, setIsCustomTipModalOpen] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -105,6 +76,7 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    console.log("payment submit pressed")
 
     if (!stripe || !elements || !clientSecret) {
       return;
@@ -121,11 +93,12 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
       return;
     }
 
+    
     const { error } = await stripe.confirmPayment({
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `${window.location.origin}/success?amount=${amount}`,
+        return_url: `${window.location.origin}/success?amount=$}`,
       },
     });
 
@@ -279,28 +252,58 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
         </div>
       </div>
 
+      {/* Tipping Section */}
+      <div className="mt-6">
+        <p className="text-sm font-medium text-gray-700 mb-4">Tip Amount</p>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          {TIP_PERCENTAGES.map((percentage) => (
+            <button
+              key={percentage}
+              type="button"
+              onClick={() => {
+                updateTipPercentage(percentage);
+                setcustomTipValueSelected(false);
+              }}
+              className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${
+                getTipPercentage() === percentage
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              <span className="text-md">{percentage}%</span>
+              <span className="text-sm">${((getSubtotal() / 100) * (percentage / 100)).toFixed(2)}</span>
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => setIsCustomTipModalOpen(true)}
+            className={` hover:cursor-pointer flex flex-col items-center justify-center py-3 px-4 rounded-lg ${
+              customTipValueSelected
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            <span className="text-lg font-medium">Other</span>
+            <span className="text-sm">${(customTipValueCents / 100).toFixed(2)}</span>
+          </button>
+        </div>
+      </div>
+
+      <CustomTipModal 
+        isOpen={isCustomTipModalOpen}
+        onClose={() => setIsCustomTipModalOpen(false)}
+        customTipValueCents={customTipValueCents}
+        setCustomTipValueCents={setcustomTipValueCents}
+      />
+
+      {/* Errors Display */}
       {errors.submit && (
         <div className="mt-4 p-3 bg-red-50 text-red-600 rounded">
           {errors.submit}
         </div>
       )}
 
-      <div className="flex gap-2">
-        {/* {[10, 15, 20, 25].map((percentage) => (
-          <button
-            key={percentage}
-            onClick={() => setTipPercentage(percentage)}
-            className={`flex-1 py-1 px-2 rounded ${
-              tipPercentage === percentage
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {percentage}%
-          </button>
-        ))} */}
-      </div>
-
+      {/* Stripe Element */}
       {clientSecret && (
         <PaymentElement
           className="py-10 w-full"
@@ -320,7 +323,7 @@ export default function CheckoutForm({ amount }: CheckoutFormProps) {
         disabled={!stripe || loading}
         className="mt-6 w-full inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 hover:cursor-pointer disabled:opacity-50 transition-colors disabled:animate-pulse"
       >
-        {!loading ? `Pay $${amount}` : "Processing..."}
+        {!loading ? `Pay $${(getTotalPrice()/100).toFixed(2)}` : "Processing..."}
       </button>
     </form>
   );

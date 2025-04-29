@@ -1,21 +1,29 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import { CartItem } from '../types/product'
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { CartItem } from '../types/product';
+import { calculateFinalPrice } from '../../lib/calculateFinalPrice';
 
 interface CartStore {
-  items: CartItem[]
-  addItem: (item: Omit<CartItem, 'quantity' | 'uniqueId'>) => void
-  removeItem: (uniqueId: string) => void
-  updateQuantity: (uniqueId: string, quantity: number) => void
-  updateItemModifications: (uniqueId: string, modifications: Partial<CartItem>) => void
-  clearCart: () => void
-  getTotalItems: () => number
-  getTotalPrice: () => number
+  items: CartItem[];
+  tip: number;
+  addItem: (item: Omit<CartItem, 'quantity' | 'uniqueId'>) => void;
+  removeItem: (uniqueId: string) => void;
+  updateQuantity: (uniqueId: string, quantity: number) => void;
+  updateItemModifications: (uniqueId: string, modifications: Partial<CartItem>) => void;
+  clearCart: () => void;
+  getTotalItems: () => number;
+  getSubtotal: () => number;
+  getTotalPrice: () => number;
+  updateTipPercentage: (tip: number) => void;
+  getTipPercentage: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
+      tip: 0,
+      updateTipPercentage: (tip) => set({ tip }),
+      getTipPercentage: () => get().tip,
       items: [],
       addItem: (item) => set((state) => {
         // Check if an identical item already exists in the cart
@@ -62,19 +70,24 @@ export const useCartStore = create<CartStore>()(
         })),
       clearCart: () => set({ items: [] }),
       getTotalItems: () => {
-        const { items } = get()
-        return items.reduce((total, item) => total + item.quantity, 0)
+        const { items } = get();
+        return items.reduce((total, item) => total + item.quantity, 0);
+      },
+      getSubtotal: () => {
+        const { items } = get();
+        // Use our centralized calculation function but only return the subtotal
+        const priceBreakdown = calculateFinalPrice(items, false);
+        return priceBreakdown.subtotal;
       },
       getTotalPrice: () => {
-        const { items } = get()
-        return items.reduce((total, item) => {
-          const additionsPrice = item.additions?.reduce((sum, addition) => sum + addition.price, 0) || 0
-          return total + ((item.price + additionsPrice) * item.quantity)
-        }, 0)
-      },
+        const { items } = get();
+        // including tip value
+        const priceBreakdown = calculateFinalPrice(items, true, get().getTipPercentage()); 
+        return priceBreakdown.total;
+      }
     }),
     {
       name: 'cart-storage',
     }
   )
-)
+);

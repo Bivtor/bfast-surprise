@@ -2,9 +2,9 @@ import { useCartStore } from "../../store/cartStore";
 import OrderSummary from "@/app/components/OrderSummary/OrderSummary";
 import { Product } from "../../types/product";
 import Link from "next/link";
-import { motion, AnimatePresence } from 'framer-motion';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { calculateFinalPrice } from "../../../lib/calculateFinalPrice";
 
 interface OrderSummaryContainerProps {
   products: Product[];
@@ -23,21 +23,26 @@ export default function OrderSummaryContainer({
   isMobile = false,
   onClose,
   showCheckoutButton = true,
-  isCheckout = false,
+  isCheckout = false
 }: OrderSummaryContainerProps) {
-  const { getTotalPrice } = useCartStore();
-  const [tipPercentage, setTipPercentage] = useState<number>(15);
-  const subtotal = getTotalPrice();
-  const deliveryFee = 500; // $5.00 in cents
-  const taxRate = 0.0825; // 8.25% tax rate
-  const taxAmount = Math.round(subtotal * taxRate);
-  const tipAmount = Math.round(subtotal * (tipPercentage / 100));
-  const total = subtotal + deliveryFee + taxAmount + tipAmount;
+  const { items, getTipPercentage } = useCartStore();
+  
+  const priceBreakdown = calculateFinalPrice(items, isCheckout, getTipPercentage() ? getTipPercentage() : undefined);
+  
+  const prices = {
+    subtotal: (priceBreakdown.subtotal / 100).toFixed(2),
+    deliveryFee: (priceBreakdown.deliveryFee / 100).toFixed(2),
+    taxAmount: (priceBreakdown.tax / 100).toFixed(2),
+    tipAmount: (priceBreakdown.tipAmount / 100).toFixed(2),
+    total: (priceBreakdown.total / 100).toFixed(2)
+  };
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div 
-        className={`flex flex-col ${isMobile ? 'h-[100dvh] bg-white' : 'h-full'}`}
+      <motion.div
+        className={`flex flex-col ${
+          isMobile ? "h-[100dvh] bg-white" : "h-full"
+        }`}
         initial={isMobile ? { y: "100%" } : undefined}
         animate={isMobile ? { y: 0 } : undefined}
         exit={isMobile ? { y: "100%" } : undefined}
@@ -46,7 +51,7 @@ export default function OrderSummaryContainer({
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200 ">
           <h2 className="text-lg font-semibold text-gray-900">Order Summary</h2>
-          
+
           {onToggle && !isMobile && (
             <button
               onClick={onToggle}
@@ -55,7 +60,7 @@ export default function OrderSummaryContainer({
               <svg
                 width="16"
                 height="16"
-                viewBox="0 0 16 16" 
+                viewBox="0 0 16 16"
                 fill="none"
                 className={`transform transition-transform duration-200 ${
                   isOpen ? "rotate-180" : ""
@@ -91,36 +96,34 @@ export default function OrderSummaryContainer({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-6 px-8 space-y-4">
-          <div className="flex justify-between font-medium">
+        <div className="border-t border-gray-200 p-6 px-8">
+          <div className="flex justify-between text-gray-600">
             <span>Subtotal</span>
-            <span className="text-lg">${(subtotal / 100).toFixed(2)}</span>
+            <span className="">${prices.subtotal}</span>
           </div>
 
           {isCheckout && (
-            <>
+            <div className="text-sm py-1">
               <div className="flex justify-between text-gray-600">
-                <span>Delivery Fee</span>
-                <span>${(deliveryFee / 100).toFixed(2)}</span>
+                <span className="font-underline">Delivery Fee</span>
+                <span>${prices.deliveryFee}</span>
               </div>
 
               <div className="flex justify-between text-gray-600">
                 <span>Tax</span>
-                <span>${(taxAmount / 100).toFixed(2)}</span>
+                <span>${prices.taxAmount}</span>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-gray-600">
-                  <span>Tip</span>
-                  <span>${(tipAmount / 100).toFixed(2)}</span>
-                </div>
-              </div>
+              {getTipPercentage() > 0 && (<div className="flex justify-between text-gray-600">
+                <span>Total Tip</span>
+                <span>${prices.tipAmount}</span>
+              </div>)}
 
               <div className="flex justify-between font-bold text-lg pt-2">
                 <span>Total</span>
-                <span>${(total / 100).toFixed(2)}</span>
+                <span>${prices.total}</span>
               </div>
-            </>
+            </div>
           )}
 
           {isMobile && (
