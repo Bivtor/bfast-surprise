@@ -88,13 +88,13 @@ function CustomTipModal({ isOpen, onClose, onSubmit }: CustomTipModalProps) {
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                   <input
+                    autoFocus
                     type="text"
                     inputMode="numeric"
                     value={formatAsCurrency(rawInput)}
                     onKeyDown={handleKeyDown}
                     className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg p-4 pl-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     placeholder="0.00"
-                    readOnly
                   />
                 </div>
               </div>
