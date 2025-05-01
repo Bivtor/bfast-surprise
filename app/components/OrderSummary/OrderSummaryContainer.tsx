@@ -46,7 +46,8 @@ export default function OrderSummaryContainer({
         initial={isMobile ? { y: "100%" } : undefined}
         animate={isMobile ? { y: 0 } : undefined}
         exit={isMobile ? { y: "100%" } : undefined}
-        transition={{ type: "spring", damping: 25, stiffness: 500 }}
+        transition={{duration: 0.8, delay: 0.1, ease: [0, 0.71, 0.2, 1.01]}}
+        
       >
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-300 ">
