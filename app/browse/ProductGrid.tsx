@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import AddToCartModal from "../components/Cart/AddToCartModal";
 import { Product } from "../types/product";
+import { TRANSITION_STYLE_CART_MOBILE } from "../constants/pricing";
 
 interface ProductGridProps {
   products: Product[];
@@ -28,7 +29,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
             key={product.id}
             onClick={(e) => handleAddToCartClick(product, e)}
             className="group relative bg-white rounded-lg border border-gray-300 overflow-hidden flex cursor-pointer hover:bg-gray-100 transition-colors duration-200"
-            transition={{ duration: 0.2 }}
+            transition={TRANSITION_STYLE_CART_MOBILE}
           >
             <div className="p-4 flex-[2]">
               <div className="flex flex-col h-full">

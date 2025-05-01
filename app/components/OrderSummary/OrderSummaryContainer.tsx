@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { calculateFinalPriceCents } from "../../../lib/calculateFinalPrice";
+import { TRANSITION_STYLE_CART_MOBILE } from "@/app/constants/pricing";
 
 interface OrderSummaryContainerProps {
   products: Product[];
@@ -46,8 +47,7 @@ export default function OrderSummaryContainer({
         initial={isMobile ? { y: "100%" } : undefined}
         animate={isMobile ? { y: 0 } : undefined}
         exit={isMobile ? { y: "100%" } : undefined}
-        transition={{duration: 0.8, delay: 0.1, ease: [0, 0.71, 0.2, 1.01]}}
-        
+        transition={TRANSITION_STYLE_CART_MOBILE}
       >
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-300 ">
