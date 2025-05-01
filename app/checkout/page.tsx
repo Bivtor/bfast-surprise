@@ -8,7 +8,6 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useCartStore } from "../store/cartStore";
 import { useEffect, useState } from "react";
 import { Product } from "../types/product";
-import { DEFAULT_TIP_PERCENTAGE } from "../constants/pricing";
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
   throw new Error("Stripe public key is not defined");
@@ -18,7 +17,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 export default function CheckoutPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const { items, clearCart, getTotalItems, getTotalPrice, updateTip} = useCartStore();
+  const { items, clearCart, getTotalItems, getSubtotal, getTotalPrice} = useCartStore();
   const [clientSecret, setClientSecret] = useState<string>();
 
   useEffect(() => {
@@ -71,7 +70,7 @@ export default function CheckoutPage() {
           </div>
 
           <div className="lg:col-span-8 order-last lg:order-first " >
-            {getTotalPrice() > 0 ? (
+            {getSubtotal() > 0 ? (
               <Elements
                 stripe={stripePromise}
                 options={{
