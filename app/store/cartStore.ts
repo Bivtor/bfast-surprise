@@ -1,57 +1,87 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { CartItem } from '../types/product';
-import { calculateFinalPrice } from '../../lib/calculateFinalPrice';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { CartItem, TipStructure } from "../types/product";
+import { calculateFinalPriceCents } from "../../lib/calculateFinalPrice";
+import { DEFAULT_TIP_PERCENTAGE } from "../constants/pricing";
 
 interface CartStore {
+  
+  // Tip
+  tip: TipStructure;
+  updateTip: (tip: TipStructure) => void;
+  getTipAmount: () => number;
+
+  // Cart items
   items: CartItem[];
-  tip: number;
-  addItem: (item: Omit<CartItem, 'quantity' | 'uniqueId'>) => void;
+  addItem: (item: Omit<CartItem, "quantity" | "uniqueId">) => void;
   removeItem: (uniqueId: string) => void;
   updateQuantity: (uniqueId: string, quantity: number) => void;
-  updateItemModifications: (uniqueId: string, modifications: Partial<CartItem>) => void;
-  clearCart: () => void;
+  updateItemModifications: (
+    uniqueId: string,
+    modifications: Partial<CartItem>
+  ) => void;
   getTotalItems: () => number;
+
+  // Cart
+  clearCart: () => void;
+
+  // Cart calculations
   getSubtotal: () => number;
   getTotalPrice: () => number;
-  updateTipPercentage: (tip: number) => void;
-  getTipPercentage: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
-      tip: 0,
-      updateTipPercentage: (tip) => set({ tip }),
-      getTipPercentage: () => get().tip,
       items: [],
-      addItem: (item) => set((state) => {
-        // Check if an identical item already exists in the cart
-        const existingItem = state.items.find((cartItem) => {
-          const sameProduct = cartItem.id === item.id;
-          const sameAdditions = JSON.stringify(cartItem.additions) === JSON.stringify(item.additions);
-          const sameSubtractions = JSON.stringify(cartItem.subtractions) === JSON.stringify(item.subtractions);
-          const sameNote = cartItem.note === item.note;
-          
-          return sameProduct && sameAdditions && sameSubtractions && sameNote;
-        });
-
-        if (existingItem) {
-          // Update quantity of existing item
-          return {
-            items: state.items.map((cartItem) =>
-              cartItem.uniqueId === existingItem.uniqueId
-                ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                : cartItem
-            ),
-          };
+      tip: {
+        type: "percentage",
+        value: DEFAULT_TIP_PERCENTAGE
+      },
+      updateTip: (tip) => set({ tip }),
+      getTipAmount: () => {
+        const { tip } = get();
+        const subtotal = get().getSubtotal();
+        if (tip.type === "percentage") {
+          return Math.round((subtotal * tip.value) / 100);
         }
+        return Math.round(tip.value * 100); // Convert dollars to cents
+      },
+      addItem: (item) =>
+        set((state) => {
+          // Check if an identical item already exists in the cart
+          const existingItem = state.items.find((cartItem) => {
+            const sameProduct = cartItem.id === item.id;
+            const sameAdditions =
+              JSON.stringify(cartItem.additions) ===
+              JSON.stringify(item.additions);
+            const sameSubtractions =
+              JSON.stringify(cartItem.subtractions) ===
+              JSON.stringify(item.subtractions);
+            const sameNote = cartItem.note === item.note;
 
-        // Add new item if no identical item exists
-        return {
-          items: [...state.items, { ...item, quantity: 1, uniqueId: crypto.randomUUID() }],
-        };
-      }),
+            return sameProduct && sameAdditions && sameSubtractions && sameNote;
+          });
+
+          if (existingItem) {
+            // Update quantity of existing item
+            return {
+              items: state.items.map((cartItem) =>
+                cartItem.uniqueId === existingItem.uniqueId
+                  ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                  : cartItem
+              ),
+            };
+          }
+
+          // Add new item if no identical item exists
+          return {
+            items: [
+              ...state.items,
+              { ...item, quantity: 1, uniqueId: crypto.randomUUID() },
+            ],
+          };
+        }),
       removeItem: (uniqueId) =>
         set((state) => ({
           items: state.items.filter((item) => item.uniqueId !== uniqueId),
@@ -74,20 +104,21 @@ export const useCartStore = create<CartStore>()(
         return items.reduce((total, item) => total + item.quantity, 0);
       },
       getSubtotal: () => {
-        const { items } = get();
         // Use our centralized calculation function but only return the subtotal
-        const priceBreakdown = calculateFinalPrice(items, false);
+        const { items } = get();
+        const priceBreakdown = calculateFinalPriceCents(items, false);
         return priceBreakdown.subtotal;
       },
-      getTotalPrice: () => {
-        const { items } = get();
+      getTotalPrice: () => { 
         // including tip value
-        const priceBreakdown = calculateFinalPrice(items, true, get().getTipPercentage()); 
+        const { items } = get();
+        const tipAmount = get().getTipAmount();
+        const priceBreakdown = calculateFinalPriceCents(items, true, tipAmount);
         return priceBreakdown.total;
-      }
+      },
     }),
     {
-      name: 'cart-storage',
+      name: "cart-storage",
     }
   )
 );

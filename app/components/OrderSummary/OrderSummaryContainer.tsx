@@ -4,7 +4,7 @@ import { Product } from "../../types/product";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { calculateFinalPrice } from "../../../lib/calculateFinalPrice";
+import { calculateFinalPriceCents } from "../../../lib/calculateFinalPrice";
 
 interface OrderSummaryContainerProps {
   products: Product[];
@@ -25,9 +25,9 @@ export default function OrderSummaryContainer({
   showCheckoutButton = true,
   isCheckout = false
 }: OrderSummaryContainerProps) {
-  const { items, getTipPercentage } = useCartStore();
+  const { items, getTipAmount } = useCartStore();
   
-  const priceBreakdown = calculateFinalPrice(items, isCheckout, getTipPercentage() ? getTipPercentage() : undefined);
+  const priceBreakdown = calculateFinalPriceCents(items, isCheckout, getTipAmount() ? getTipAmount() : undefined);
   
   const prices = {
     subtotal: (priceBreakdown.subtotal / 100).toFixed(2),
@@ -40,7 +40,7 @@ export default function OrderSummaryContainer({
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        className={`flex flex-col ${
+        className={`flex flex-col border border-gray-300 rounded-2xl ${
           isMobile ? "h-[100dvh] bg-white" : "h-full"
         }`}
         initial={isMobile ? { y: "100%" } : undefined}
@@ -49,7 +49,7 @@ export default function OrderSummaryContainer({
         transition={{ type: "spring", damping: 25, stiffness: 500 }}
       >
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200 ">
+        <div className="flex justify-between items-center p-6 border-b border-gray-300 ">
           <h2 className="text-lg font-semibold text-gray-900">Order Summary</h2>
 
           {onToggle && !isMobile && (
@@ -96,10 +96,10 @@ export default function OrderSummaryContainer({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-6 px-8">
-          <div className="flex justify-between text-gray-600">
+        <div className="border-t border-gray-300 p-6 px-8">
+          <div className={`flex justify-between ${!isCheckout ? "font-bold text-black text-lg pb-4" : "text-gray-600 text-sm"}`}>
             <span>Subtotal</span>
-            <span className="">${prices.subtotal}</span>
+            <span>${prices.subtotal}</span>
           </div>
 
           {isCheckout && (
@@ -114,7 +114,7 @@ export default function OrderSummaryContainer({
                 <span>${prices.taxAmount}</span>
               </div>
 
-              {getTipPercentage() > 0 && (<div className="flex justify-between text-gray-600">
+              {getTipAmount() > 0 && (<div className="flex justify-between text-gray-600">
                 <span>Total Tip</span>
                 <span>${prices.tipAmount}</span>
               </div>)}
@@ -129,7 +129,7 @@ export default function OrderSummaryContainer({
           {isMobile && (
             <button
               onClick={onClose}
-              className="w-full inline-flex justify-center items-center px-6 py-3 border border-gray-300 rounded-full shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 hover:cursor-pointer"
+              className="w-full inline-flex justify-center items-center px-6 py-3 my-3 border border-gray-300 rounded-full shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 hover:cursor-pointer"
             >
               Add More Items
             </button>

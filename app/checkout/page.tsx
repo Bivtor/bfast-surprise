@@ -18,10 +18,8 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 export default function CheckoutPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const { items, clearCart, getTotalItems, getTotalPrice, getTip, updateTip} = useCartStore();
+  const { items, clearCart, getTotalItems, getTotalPrice, updateTip} = useCartStore();
   const [clientSecret, setClientSecret] = useState<string>();
-  const [tipPercentage, setTipPercentage] = useState(DEFAULT_TIP_PERCENTAGE);
-  const totalPrice = getTotalPrice();
 
   useEffect(() => {
     fetch("/api/products")
@@ -72,13 +70,13 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-8 order-last lg:order-first">
-            {totalPrice > 0 ? (
+          <div className="lg:col-span-8 order-last lg:order-first " >
+            {getTotalPrice() > 0 ? (
               <Elements
                 stripe={stripePromise}
                 options={{
                   mode: "payment",
-                  amount: totalPrice,
+                  amount: getTotalPrice(),
                   currency: "usd",
                 }}
               >

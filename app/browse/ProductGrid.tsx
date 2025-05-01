@@ -27,7 +27,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
           <motion.div
             key={product.id}
             onClick={(e) => handleAddToCartClick(product, e)}
-            className="group relative bg-white rounded-lg border border-gray-200 overflow-hidden flex cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+            className="group relative bg-white rounded-lg border border-gray-300 overflow-hidden flex cursor-pointer hover:bg-gray-100 transition-colors duration-200"
             transition={{ duration: 0.2 }}
           >
             <div className="p-4 flex-[2]">

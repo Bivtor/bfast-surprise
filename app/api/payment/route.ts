@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { calculateFinalPrice } from '../../../lib/calculateFinalPrice';
+import { calculateFinalPriceCents } from '../../../lib/calculateFinalPrice';
 import { DEFAULT_TIP_PERCENTAGE } from '../../constants/pricing';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const data = await req.json();
     
     // Calculate final amount using our shared function
-    const priceBreakdown = calculateFinalPrice(data.items, true, DEFAULT_TIP_PERCENTAGE);
+    const priceBreakdown = calculateFinalPriceCents(data.items, true, DEFAULT_TIP_PERCENTAGE);
 
     // Create payment intent with the calculated total
     const paymentIntent = await stripe.paymentIntents.create({

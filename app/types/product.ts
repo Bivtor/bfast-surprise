@@ -9,6 +9,14 @@ export interface Subtraction {
   name: string;
 }
 
+export interface PriceBreakdown {
+  subtotal: number;  // in cents
+  tax: number;       // in cents
+  deliveryFee: number; // in cents
+  tipAmount: number;   // in cents
+  total: number;     // in cents
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -40,4 +48,9 @@ export interface CartItem {
   subtractions: CartSubtraction[];
   note: string;
   uniqueId: string;
+}
+
+export interface TipStructure {
+  type: "percentage" | "flat";
+  value: number;
 }

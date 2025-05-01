@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState } from "react";
 import {
   PaymentElement,
   useStripe,
@@ -6,7 +6,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { TIP_PERCENTAGES } from "@/app/constants/pricing";
 import { useCartStore } from "@/app/store/cartStore";
-import CustomTipModal from "./CustomTipForm";
+import CustomTipModal from "@/app/components/Checkout/CustomTipModal";
 
 const TEST_MODE = process.env.NODE_ENV === "development";
 
@@ -30,6 +30,8 @@ interface CheckoutFormProps {
   setLoading: (loading: boolean) => void;
 }
 
+
+
 export default function CheckoutForm({
   clientSecret,
   loading,
@@ -37,9 +39,9 @@ export default function CheckoutForm({
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const [customTipValueCents, setcustomTipValueCents] = useState<number>(0);
-  const [customTipValueSelected, setcustomTipValueSelected] = useState<boolean>(false);
-  const {getTotalPrice, updateTipPercentage, getTipPercentage, getSubtotal} = useCartStore();
+  const { getSubtotal, getTotalPrice, updateTip, tip } = useCartStore();
+  const [isCustomTipModalOpen, setIsCustomTipModalOpen] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState(
     TEST_MODE
       ? TEST_DATA
@@ -53,9 +55,6 @@ export default function CheckoutForm({
           customNote: "",
         }
   );
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isCustomTipModalOpen, setIsCustomTipModalOpen] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -93,7 +92,6 @@ export default function CheckoutForm({
       return;
     }
 
-    
     const { error } = await stripe.confirmPayment({
       elements,
       clientSecret,
@@ -111,8 +109,30 @@ export default function CheckoutForm({
     }
   };
 
+  const handleTipSelection = (percentage: number) => {
+    updateTip({
+      type: "percentage",
+      value: percentage
+    });
+  };
+
+  const handleCustomTip = (amount: number) => {
+    updateTip({
+      type: "flat",
+      value: amount
+    });
+  };
+
+  const getCurrentTipDisplay = () => {
+    const subtotal = getSubtotal() / 100;
+    if (tip.type === "percentage") {
+      return ((subtotal * tip.value) / 100).toFixed(2);
+    }
+    return tip.value.toFixed(2);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6">
+    <form onSubmit={handleSubmit} className="bg-white shadow p-6 border-gray-300 border rounded-2xl">
       <div className="space-y-6">
         <div>
           <label
@@ -260,31 +280,28 @@ export default function CheckoutForm({
             <button
               key={percentage}
               type="button"
-              onClick={() => {
-                updateTipPercentage(percentage);
-                setcustomTipValueSelected(false);
-              }}
+              onClick={() => handleTipSelection(percentage)}
               className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${
-                getTipPercentage() === percentage
+                tip.type === "percentage" && tip.value === percentage
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              <span className="text-md">{percentage}%</span>
-              <span className="text-sm">${((getSubtotal() / 100) * (percentage / 100)).toFixed(2)}</span>
+              <span className="text-lg font-medium">{percentage}%</span>
+              <span className="text-sm text-center ">${((getSubtotal() / 100) * (percentage / 100)).toFixed(2)}</span>
             </button>
           ))}
           <button
             type="button"
             onClick={() => setIsCustomTipModalOpen(true)}
-            className={` hover:cursor-pointer flex flex-col items-center justify-center py-3 px-4 rounded-lg ${
-              customTipValueSelected
+            className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${
+              tip.type === "flat"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             <span className="text-lg font-medium">Other</span>
-            <span className="text-sm">${(customTipValueCents / 100).toFixed(2)}</span>
+            <span className="text-sm">${getCurrentTipDisplay()}</span>
           </button>
         </div>
       </div>
@@ -292,8 +309,7 @@ export default function CheckoutForm({
       <CustomTipModal 
         isOpen={isCustomTipModalOpen}
         onClose={() => setIsCustomTipModalOpen(false)}
-        customTipValueCents={customTipValueCents}
-        setCustomTipValueCents={setcustomTipValueCents}
+        onSubmit={handleCustomTip}
       />
 
       {/* Errors Display */}

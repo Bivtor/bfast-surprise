@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CartItem, Product } from "../types/product";
 import { useCartStore } from "../store/cartStore";
-import EditItemModal from "./EditItemModal";
+import EditItemModal from "@/app/components/Cart/EditItemModal";
 
 interface OrderSummaryProps {
   isOpen?: boolean;
@@ -38,7 +38,7 @@ export default function OrderSummary({
         {items.map((item) => (
           <div
             key={item.uniqueId}
-            className="py-3 px-6 border-b border-gray-200 last:border-b-0 text-black text-sm"
+            className="py-3 px-6 border-b border-gray-300 last:border-b-0 text-black text-sm"
           >
             {/* Basic item info - always visible */}
             <div className="flex items-center justify-between">

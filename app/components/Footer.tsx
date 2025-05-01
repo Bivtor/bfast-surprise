@@ -76,7 +76,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-8 border-t border-gray-200 pt-8">
+        <div className="mt-8 border-t border-gray-300 pt-8">
           <p className="text-gray-400 text-sm text-center">
             © {new Date().getFullYear()} BerryGoodMorning. All rights reserved.
           </p>

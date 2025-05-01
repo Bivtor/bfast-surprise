@@ -1,20 +1,27 @@
 import { CartItem } from '../app/types/product';
-import { DELIVERY_FEE_CENTS, TAX_RATE, DEFAULT_TIP_PERCENTAGE } from '../app/constants/pricing';
+import { DELIVERY_FEE_CENTS, TAX_RATE } from '../app/constants/pricing';
+import { PriceBreakdown } from '@/app/types/product';
 
-export interface PriceBreakdown {
-  subtotal: number;  // in cents
-  tax: number;       // in cents
-  deliveryFee: number; // in cents
-  tipAmount: number;   // in cents
-  total: number;     // in cents
-}
-
-export function calculateFinalPrice(items: CartItem[], includeTip: boolean = true, tipPercentage: number = DEFAULT_TIP_PERCENTAGE): PriceBreakdown {
+export function calculateFinalPriceCents(
+  items: CartItem[], 
+  includeFeesAndTax: boolean = false,
+  tipAmount: number = 0
+): PriceBreakdown {
   // Calculate subtotal from items and their additions
   const subtotal = items.reduce((total, item) => {
     const additionsPrice = item.additions?.reduce((sum, addition) => sum + addition.price, 0) || 0;
     return total + ((item.price + additionsPrice) * item.quantity);
   }, 0);
+
+  if (!includeFeesAndTax) {
+    return {
+      subtotal,
+      deliveryFee: 0,
+      tax: 0,
+      tipAmount: 0,
+      total: subtotal
+    };
+  }
 
   // Calculate tax
   const tax = Math.round(subtotal * TAX_RATE);
@@ -22,10 +29,7 @@ export function calculateFinalPrice(items: CartItem[], includeTip: boolean = tru
   // Add delivery fee
   const deliveryFee = DELIVERY_FEE_CENTS;
 
-  // Calculate tip
-  const tipAmount = includeTip ? Math.round(subtotal * tipPercentage/100) : 0;
-
-  // Calculate total
+  // Calculate total with the provided tip amount
   const total = subtotal + tax + deliveryFee + tipAmount;
 
   return {
