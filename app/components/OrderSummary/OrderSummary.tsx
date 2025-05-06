@@ -2,7 +2,6 @@ import { useState } from "react";
 import { CartItem, Product } from "../../types/product";
 import { useCartStore } from "../../store/cartStore";
 import EditItemModal from "../Cart/EditItemModal";
-// import {motion, AnimatePresence} from "framer-motion";
 
 interface OrderSummaryProps {
   isOpen?: boolean;
@@ -26,7 +25,7 @@ export default function OrderSummary({
 
   if (items.length === 0) {
     return (
-      <p className="text-gray-500 text-center p-6">
+      <p className="text-gray-500 text-center p-6 text-sm">
         Choose an item from the menu to get started
       </p>
     );
@@ -34,7 +33,7 @@ export default function OrderSummary({
 
   return (
     <>
-      <div className="space-y-0 ">
+      <div className="space-y-0 gap-1 flex flex-col">
         {items.map((item) => (
           <div
             key={item.uniqueId}
@@ -59,12 +58,19 @@ export default function OrderSummary({
                 {item.additions && item.additions.length > 0 && (
                   <div className="text-sm text-gray-500 space-y-1">
                     {item.additions.map((addition) => (
-                      <div key={addition.id}>+ {addition.name}</div>
+                      <div key={addition.id}>{addition.name}</div>
+                    ))}
+                  </div>
+                )}
+                {item.subtractions && item.subtractions.length > 0 && (
+                  <div className="text-sm text-gray-500 space-y-1">
+                    {item.subtractions.map((subtraction) => (
+                      <div key={subtraction.id}>- {subtraction.name}</div>
                     ))}
                   </div>
                 )}
                 {item.note && (
-                  <div className="mt-2 text-sm text-gray-500">
+                  <div className="mt-2 text-xs text-gray-500 italic line-clamp-1">
                     Note: {item.note}
                   </div>
                 )}

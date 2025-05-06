@@ -13,7 +13,7 @@ interface CartStore {
 
   // Cart items
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity" | "uniqueId">) => void;
+  addItem: (item: Omit<CartItem, "uniqueId">) => void;
   removeItem: (uniqueId: string) => void;
   updateQuantity: (uniqueId: string, quantity: number) => void;
   updateItemModifications: (
@@ -73,12 +73,13 @@ export const useCartStore = create<CartStore>()(
               ),
             };
           }
+          console.log(state.items);
 
           // Add new item if no identical item exists
           return {
             items: [
               ...state.items,
-              { ...item, quantity: 1, uniqueId: crypto.randomUUID() },
+              { ...item, uniqueId: crypto.randomUUID() },
             ],
           };
         }),

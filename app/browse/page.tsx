@@ -36,7 +36,7 @@ export default function BrowsePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-black">
       <div className="sticky top-0 z-50 bg-white shadow">
         <Navigation />
       </div>

@@ -88,7 +88,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white relative rounded-b-lg">
+    <main className="min-h-screen dark:bg-black dark:text-white bg-white relative rounded-b-lg ">
       {/* Logo in top left/center */}
       {/* <div className="absolute top-0 left-0 w-full z-30 p-6 lg:px-8">
         <Link href="/" className="block text-center sm:text-left">
@@ -109,10 +109,10 @@ export default function Home() {
           <div ref={heroRef} className="hidden lg:flex h-screen">
             {/* Left side - Content */}
             <div className="w-1/2 flex flex-col justify-center px-12 text-center">
-              <h2 className="text-6xl font-bold mb-6 text-black">
+              <h2 className="text-6xl font-bold mb-6 text-black dark:text-[#88BFFF]">
                 Surprise Someone Special
               </h2>
-              <p className="text-xl mb-8 text-gray-600">
+              <p className="text-xl mb-8 text-gray-600 dark:text-white">
                 Delight your loved ones with a magical breakfast experience delivered right to their door
               </p>
               <div>
@@ -177,7 +177,7 @@ export default function Home() {
               <h2 className="text-4xl font-bold mb-6 text-black">
                 Surprise Someone Special
               </h2>
-              <p className="text-xl mb-8 text-gray-600">
+              <p className="text-xl mb-8 text-gray-600 dark:text-white">
                 Delight your loved ones with a magical breakfast experience delivered right to their door
               </p>
               <Link
@@ -193,7 +193,7 @@ export default function Home() {
 
       {/* Quote section */}
       <FadeIn>
-        <section className="relative py-24 bg-white">
+        <section className="relative py-24 bg-white  dark:bg-black ">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
@@ -206,10 +206,9 @@ export default function Home() {
                 />
               </div>
               <div>
-                <blockquote className="text-2xl font-light text-gray-600 italic">
+                <blockquote className="text-2xl font-light text-gray-600 italic dark:text-white">
                   "Every morning is a chance to start someone's day with a smile. We make that chance delicious."
                 </blockquote>
-                <p className="mt-4 text-[#ed4a5a] font-semibold">- Our Promise</p>
               </div>
             </div>
           </div>
@@ -218,7 +217,7 @@ export default function Home() {
 
       {/* Reviews section */}
       <FadeIn>
-        <section className="py-24 bg-gray-50">
+        <section className="py-24 bg-gray-50 dark:bg-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center mb-12 text-[#88BFFF]">What Our Customers Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

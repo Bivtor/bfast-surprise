@@ -41,7 +41,7 @@ export default function OrderSummaryContainer({
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        className={`flex flex-col border border-gray-300 rounded-2xl ${
+        className={`flex flex-col border border-gray-300  rounded-2xl ${
           isMobile ? "h-[100dvh] bg-white" : "h-full"
         }`}
         initial={isMobile ? { y: "100%" } : undefined}
@@ -50,10 +50,10 @@ export default function OrderSummaryContainer({
         transition={TRANSITION_STYLE_CART_MOBILE}
       >
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-300 ">
+        <div className="flex justify-between items-center p-6 border-b border-gray-300 dark:bg-gray-200 rounded-t-2xl ">
           <h2 className="text-lg font-semibold text-gray-900">Order Summary</h2>
 
-          {onToggle && !isMobile && (
+          {onToggle && !isMobile && items.length > 0 && (
             <button
               onClick={onToggle}
               className="text-black p-2 hover:bg-gray-100 rounded-full hover:cursor-pointer"
@@ -88,7 +88,7 @@ export default function OrderSummaryContainer({
         </div>
 
         {/* Order Summary Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto dark:bg-gray-200 ">
           <OrderSummary
             isOpen={isOpen}
             products={products}
@@ -97,7 +97,7 @@ export default function OrderSummaryContainer({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-300 p-6 px-8">
+        {items.length > 0 && (<div className="border-t border-gray-300 p-6 px-8 dark:bg-gray-200 rounded-b-2xl">
           <div className={`flex justify-between ${!isCheckout ? "font-bold text-black text-lg pb-4" : "text-gray-600 text-sm"}`}>
             <span>Subtotal</span>
             <span>${prices.subtotal}</span>
@@ -144,7 +144,7 @@ export default function OrderSummaryContainer({
               Checkout
             </Link>
           )}
-        </div>
+        </div>)}
       </motion.div>
     </AnimatePresence>
   );

@@ -30,8 +30,6 @@ interface CheckoutFormProps {
   setLoading: (loading: boolean) => void;
 }
 
-
-
 export default function CheckoutForm({
   clientSecret,
   loading,
@@ -301,7 +299,7 @@ export default function CheckoutForm({
             }`}
           >
             <span className="text-lg font-medium">Other</span>
-            <span className="text-sm">${getCurrentTipDisplay()}</span>
+            <span className="text-sm">${tip.type === "flat" ? getCurrentTipDisplay() : "0.00"}</span>
           </button>
         </div>
       </div>

@@ -20,7 +20,7 @@ interface AddToCartModalProps {
 export default function AddToCartModal({ isOpen, onClose, product, editingItem }: AddToCartModalProps) {
   useScrollLock(isOpen)
   
-  const { addItem, updateItemModifications } = useCartStore()
+  const { addItem } = useCartStore()
   const [selectedAdditions, setSelectedAdditions] = useState<CartAddition[]>([])
   const [selectedSubtractions, setSelectedSubtractions] = useState<CartSubtraction[]>([])
   const [note, setNote] = useState('')
@@ -65,6 +65,7 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
       price: product.price_cents,
       additions: selectedAdditions,
       subtractions: selectedSubtractions,
+      quantity: quantity,
       note
     })
     onClose()

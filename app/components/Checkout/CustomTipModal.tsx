@@ -95,6 +95,7 @@ function CustomTipModal({ isOpen, onClose, onSubmit }: CustomTipModalProps) {
                     onKeyDown={handleKeyDown}
                     className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg p-4 pl-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     placeholder="0.00"
+                    readOnly
                   />
                 </div>
               </div>

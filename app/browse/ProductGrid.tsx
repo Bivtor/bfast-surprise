@@ -28,7 +28,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
           <motion.div
             key={product.id}
             onClick={(e) => handleAddToCartClick(product, e)}
-            className="group relative bg-white rounded-lg border border-gray-300 overflow-hidden flex cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+            className="group relative bg-white rounded-lg border border-gray-300 overflow-hidden flex cursor-pointer hover:bg-gray-100 transition-colors duration-200 dark:bg-gray-200"
             transition={TRANSITION_STYLE_CART_MOBILE}
           >
             <div className="p-4 flex-[2]">
@@ -36,10 +36,10 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 <h3 className="text-md font-bold text-gray-900 mb-2">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-600 mb-auto">
+                <p className="text-sm text-gray-600 mb-auto line-clamp-2">
                   {product.description}
                 </p>
-                <p className="mt-3 text-base font-medium text-gray-900">
+                <p className="mt-3 text-base font-medium text-gray-900 ">
                   ${(product.price_cents / 100).toFixed(2)}
                 </p>
               </div>
