@@ -17,7 +17,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 export default function CheckoutPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const { items, clearCart, getTotalItems, getSubtotal, getTotalPrice} = useCartStore();
+  const { items, getSubtotal, getTotalPrice, getTipAmount } = useCartStore();
   const [clientSecret, setClientSecret] = useState<string>();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function CheckoutPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        amount: getTotalPrice(),
+        tipAmount: getTipAmount(),
         items,
       }),
     })

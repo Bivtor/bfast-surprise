@@ -53,4 +53,4 @@ export interface CartItem {
 export interface TipStructure {
   type: "percentage" | "flat";
   value: number;
-}
+}{{}}

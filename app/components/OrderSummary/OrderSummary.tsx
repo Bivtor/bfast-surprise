@@ -58,14 +58,14 @@ export default function OrderSummary({
                 {item.additions && item.additions.length > 0 && (
                   <div className="text-sm text-gray-500 space-y-1">
                     {item.additions.map((addition) => (
-                      <div key={addition.id}>{addition.name}</div>
+                      <div key={addition.id}>Add {addition.name}</div>
                     ))}
                   </div>
                 )}
                 {item.subtractions && item.subtractions.length > 0 && (
                   <div className="text-sm text-gray-500 space-y-1">
                     {item.subtractions.map((subtraction) => (
-                      <div key={subtraction.id}>- {subtraction.name}</div>
+                      <div key={subtraction.id}>No {subtraction.name}</div>
                     ))}
                   </div>
                 )}
@@ -77,13 +77,13 @@ export default function OrderSummary({
                 <div className="mt-3 space-x-4">
                   <button
                     onClick={() => handleEdit(item)}
-                    className="text-gray-600 hover:text-gray-800 text-xs font-medium hover:cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 text-xs font-medium hover:cursor-pointer underline"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => removeItem(item.uniqueId)}
-                    className="text-gray-600 hover:text-gray-800 text-xs font-medium hover:cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 text-xs font-medium hover:cursor-pointer underline"
                   >
                     Remove
                   </button>

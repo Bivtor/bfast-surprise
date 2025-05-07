@@ -37,7 +37,7 @@ export default function CheckoutForm({
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const { getSubtotal, getTotalPrice, updateTip, tip } = useCartStore();
+  const { getSubtotal, getTotalPrice, updateTip, tip, getTipAmount } = useCartStore();
   const [isCustomTipModalOpen, setIsCustomTipModalOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState(
@@ -117,16 +117,12 @@ export default function CheckoutForm({
   const handleCustomTip = (amount: number) => {
     updateTip({
       type: "flat",
-      value: amount
+      value: Math.round(amount * 100) // Convert dollars to cents when saving
     });
   };
 
   const getCurrentTipDisplay = () => {
-    const subtotal = getSubtotal() / 100;
-    if (tip.type === "percentage") {
-      return ((subtotal * tip.value) / 100).toFixed(2);
-    }
-    return tip.value.toFixed(2);
+      return (getTipAmount() / 100).toFixed(2); // Divide by 10000 because subtotal is in cents and we need to divide by 100 for percentage and 100 for display
   };
 
   return (

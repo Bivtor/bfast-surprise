@@ -27,14 +27,15 @@ export default function OrderSummaryContainer({
   isCheckout = false
 }: OrderSummaryContainerProps) {
   const { items, getTipAmount } = useCartStore();
+  const tipAmount = getTipAmount();
   
-  const priceBreakdown = calculateFinalPriceCents(items, isCheckout, getTipAmount() ? getTipAmount() : undefined);
+  const priceBreakdown = calculateFinalPriceCents(items, isCheckout, tipAmount);
   
   const prices = {
     subtotal: (priceBreakdown.subtotal / 100).toFixed(2),
     deliveryFee: (priceBreakdown.deliveryFee / 100).toFixed(2),
     taxAmount: (priceBreakdown.tax / 100).toFixed(2),
-    tipAmount: (priceBreakdown.tipAmount / 100).toFixed(2),
+    tipAmount: (tipAmount / 100).toFixed(2),
     total: (priceBreakdown.total / 100).toFixed(2)
   };
 
@@ -143,7 +144,7 @@ export default function OrderSummaryContainer({
             >
               Checkout
             </Link>
-          )}
+        )}
         </div>)}
       </motion.div>
     </AnimatePresence>

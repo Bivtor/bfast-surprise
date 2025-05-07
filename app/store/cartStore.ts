@@ -38,15 +38,6 @@ export const useCartStore = create<CartStore>()(
         type: "percentage",
         value: DEFAULT_TIP_PERCENTAGE
       },
-      updateTip: (tip) => set({ tip }),
-      getTipAmount: () => {
-        const { tip } = get();
-        const subtotal = get().getSubtotal();
-        if (tip.type === "percentage") {
-          return Math.round((subtotal * tip.value) / 100);
-        }
-        return Math.round(tip.value * 100); // Convert dollars to cents
-      },
       addItem: (item) =>
         set((state) => {
           // Check if an identical item already exists in the cart
@@ -110,8 +101,17 @@ export const useCartStore = create<CartStore>()(
         const priceBreakdown = calculateFinalPriceCents(items, false);
         return priceBreakdown.subtotal;
       },
+      updateTip: (tip) => set({ tip }),
+      getTipAmount: () => {
+        const { tip } = get();
+        const subtotal = get().getSubtotal();
+        // Calculate tip cents value based on percentage of subtotal
+        if (tip.type === "percentage") {
+          return Math.round((subtotal * tip.value) / 100);
+        }
+        return tip.value; // tip.value should already be in cents
+      },
       getTotalPrice: () => { 
-        // including tip value
         const { items } = get();
         const tipAmount = get().getTipAmount();
         const priceBreakdown = calculateFinalPriceCents(items, true, tipAmount);

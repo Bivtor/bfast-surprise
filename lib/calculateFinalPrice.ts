@@ -7,6 +7,7 @@ export function calculateFinalPriceCents(
   includeFeesAndTax: boolean = false,
   tipAmount: number = 0
 ): PriceBreakdown {
+
   // Calculate subtotal from items and their additions
   const subtotal = items.reduce((total, item) => {
     const additionsPrice = item.additions?.reduce((sum, addition) => sum + addition.price, 0) || 0;
@@ -19,7 +20,7 @@ export function calculateFinalPriceCents(
       deliveryFee: 0,
       tax: 0,
       tipAmount: 0,
-      total: subtotal
+      total: subtotal // same as subtotal 
     };
   }
 
@@ -34,8 +35,8 @@ export function calculateFinalPriceCents(
 
   return {
     subtotal,
-    tax,
     deliveryFee,
+    tax,
     tipAmount,
     total
   };
