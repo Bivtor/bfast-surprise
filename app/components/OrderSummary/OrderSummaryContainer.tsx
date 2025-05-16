@@ -42,8 +42,8 @@ export default function OrderSummaryContainer({
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        className={`flex flex-col border border-gray-300  rounded-2xl ${
-          isMobile ? "h-[100dvh] bg-white" : "h-full"
+        className={`flex flex-col border border-gray-300 rounded-2xl ${
+          isMobile ? "h-[100dvh] bg-white" : "h-100"
         }`}
         initial={isMobile ? { y: "100%" } : undefined}
         animate={isMobile ? { y: 0 } : undefined}
@@ -51,7 +51,7 @@ export default function OrderSummaryContainer({
         transition={TRANSITION_STYLE_CART_MOBILE}
       >
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-300 dark:bg-gray-200 rounded-t-2xl ">
+        <div className="flex justify-between items-center p-6 border-b border-gray-300 dark:bg-gray-200 rounded-t-2xl">
           <h2 className="text-lg font-semibold text-gray-900">Order Summary</h2>
 
           {onToggle && !isMobile && items.length > 0 && (
@@ -89,7 +89,7 @@ export default function OrderSummaryContainer({
         </div>
 
         {/* Order Summary Content */}
-        <div className="flex-1 overflow-auto dark:bg-gray-200 ">
+        <div className="flex-1 overflow-y-auto dark:bg-gray-200">
           <OrderSummary
             isOpen={isOpen}
             products={products}
@@ -98,54 +98,62 @@ export default function OrderSummaryContainer({
         </div>
 
         {/* Footer */}
-        {items.length > 0 && (<div className="border-t border-gray-300 p-6 px-8 dark:bg-gray-200 rounded-b-2xl">
-          <div className={`flex justify-between ${!isCheckout ? "font-bold text-black text-lg pb-4" : "text-gray-600 text-sm"}`}>
-            <span>Subtotal</span>
-            <span>${prices.subtotal}</span>
-          </div>
-
-          {isCheckout && (
-            <div className="text-sm py-1">
-              <div className="flex justify-between text-gray-600">
-                <span className="font-underline">Delivery Fee</span>
-                <span>${prices.deliveryFee}</span>
-              </div>
-
-              <div className="flex justify-between text-gray-600">
-                <span>Tax</span>
-                <span>${prices.taxAmount}</span>
-              </div>
-
-              {getTipAmount() > 0 && (<div className="flex justify-between text-gray-600">
-                <span>Total Tip</span>
-                <span>${prices.tipAmount}</span>
-              </div>)}
-
-              <div className="flex justify-between font-bold text-lg pt-2">
-                <span>Total</span>
-                <span>${prices.total}</span>
-              </div>
+        {items.length > 0 && (
+          <div className="border-t border-gray-300 p-6 px-8 dark:bg-gray-200 rounded-b-2xl">
+            <div
+              className={`flex justify-between ${
+                !isCheckout ? "font-bold text-black text-lg pb-4" : "text-gray-600 text-sm"
+              }`}
+            >
+              <span>Subtotal</span>
+              <span>${prices.subtotal}</span>
             </div>
-          )}
 
-          {isMobile && (
-            <button
-              onClick={onClose}
-              className="w-full inline-flex justify-center items-center px-6 py-3 my-3 border border-gray-300 rounded-full shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 hover:cursor-pointer"
-            >
-              Add More Items
-            </button>
-          )}
+            {isCheckout && (
+              <div className="text-sm py-1">
+                <div className="flex justify-between text-gray-600">
+                  <span className="font-underline">Delivery Fee</span>
+                  <span>${prices.deliveryFee}</span>
+                </div>
 
-          {showCheckoutButton && (
-            <Link
-              href="/checkout"
-              className="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-            >
-              Checkout
-            </Link>
+                <div className="flex justify-between text-gray-600">
+                  <span>Tax</span>
+                  <span>${prices.taxAmount}</span>
+                </div>
+
+                {getTipAmount() > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>Total Tip</span>
+                    <span>${prices.tipAmount}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-between font-bold text-lg pt-2">
+                  <span>Total</span>
+                  <span>${prices.total}</span>
+                </div>
+              </div>
+            )}
+
+            {isMobile && (
+              <button
+                onClick={onClose}
+                className="w-full inline-flex justify-center items-center px-6 py-3 my-3 border border-gray-300 rounded-full shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 hover:cursor-pointer"
+              >
+                Add More Items
+              </button>
+            )}
+
+            {showCheckoutButton && (
+              <Link
+                href="/checkout"
+                className="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Checkout
+              </Link>
+            )}
+          </div>
         )}
-        </div>)}
       </motion.div>
     </AnimatePresence>
   );

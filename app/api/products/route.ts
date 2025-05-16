@@ -17,6 +17,7 @@ export async function GET() {
           p.price_cents,
           p.image_url,
           p.available,
+          p.category,
           COALESCE(
             (
               SELECT json_agg(
@@ -48,6 +49,7 @@ export async function GET() {
           ) as subtractions
         FROM products p
         WHERE p.available = true
+        ORDER BY p.category DESC, p.name
       `)
       
       return NextResponse.json(result.rows)

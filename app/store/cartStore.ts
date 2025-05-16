@@ -64,13 +64,15 @@ export const useCartStore = create<CartStore>()(
               ),
             };
           }
-          console.log(state.items);
+
+          // Generate a deterministic ID
+          const uniqueId = `${item.id}-${Date.now()}-${state.items.length}`;
 
           // Add new item if no identical item exists
           return {
             items: [
               ...state.items,
-              { ...item, uniqueId: crypto.randomUUID() },
+              { ...item, uniqueId },
             ],
           };
         }),

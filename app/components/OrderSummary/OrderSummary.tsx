@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CartItem, Product } from "../../types/product";
 import { useCartStore } from "../../store/cartStore";
 import EditItemModal from "../Cart/EditItemModal";
+import { useScrollLock } from "@/app/hooks/useScrollLock";
 
 interface OrderSummaryProps {
   isOpen?: boolean;
@@ -11,16 +12,22 @@ interface OrderSummaryProps {
 
 export default function OrderSummary({
   isOpen = false,
-  products
+  products,
 }: OrderSummaryProps) {
+  const { lockScroll, unlockScroll } = useScrollLock();
   const { items, removeItem } = useCartStore();
   const [editingItem, setEditingItem] = useState<CartItem | null>(null);
-
   const handleEdit = (item: CartItem) => {
     const product = products.find((p) => p.id === item.id);
     if (product) {
+      lockScroll();
       setEditingItem(item);
     }
+  };
+
+  const handleModalClose = () => {
+    unlockScroll();
+    setEditingItem(null);
   };
 
   if (items.length === 0) {
@@ -69,6 +76,11 @@ export default function OrderSummary({
                     ))}
                   </div>
                 )}
+                {item.specialInstructions && (
+                  <div className="mt-2 text-xs text-gray-500 italic line-clamp-1">
+                    Instructions: {item.specialInstructions}
+                  </div>
+                )}
                 {item.note && (
                   <div className="mt-2 text-xs text-gray-500 italic line-clamp-1">
                     Note: {item.note}
@@ -97,7 +109,7 @@ export default function OrderSummary({
       {editingItem && products.find((p) => p.id === editingItem.id) && (
         <EditItemModal
           isOpen={true}
-          onClose={() => setEditingItem(null)}
+          onClose={handleModalClose}
           product={products.find((p) => p.id === editingItem.id)!}
           editingItem={editingItem}
         />

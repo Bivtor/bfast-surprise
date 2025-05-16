@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { XMarkIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { useCartStore } from '../../store/cartStore'
 import { Product, Addition, Subtraction, CartAddition, CartSubtraction } from '../../types/product'
-import { useScrollLock } from '../../hooks/useScrollLock'
+import { TRANSITION_ADD_EDIT_ITEM_MOBILE } from '@/app/constants/pricing'
 
 interface AddToCartModalProps {
   isOpen: boolean
@@ -14,16 +14,17 @@ interface AddToCartModalProps {
     additions: CartAddition[]
     subtractions: CartSubtraction[]
     note: string
+    specialInstructions: string
   }
 }
 
 export default function AddToCartModal({ isOpen, onClose, product, editingItem }: AddToCartModalProps) {
-  useScrollLock(isOpen)
   
   const { addItem } = useCartStore()
   const [selectedAdditions, setSelectedAdditions] = useState<CartAddition[]>([])
   const [selectedSubtractions, setSelectedSubtractions] = useState<CartSubtraction[]>([])
   const [note, setNote] = useState('')
+  const [specialInstructions, setSpecialInstructions] = useState('')
   const [quantity, setQuantity] = useState(1)
 
   // Initialize state when editing an item
@@ -32,6 +33,7 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
       setSelectedAdditions(editingItem.additions || [])
       setSelectedSubtractions(editingItem.subtractions || [])
       setNote(editingItem.note || '')
+      setSpecialInstructions(editingItem.specialInstructions || '')
     }
   }, [editingItem])
 
@@ -42,6 +44,7 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
         setSelectedAdditions([])
         setSelectedSubtractions([])
         setNote('')
+        setSpecialInstructions('')
       }
     }
   }, [isOpen, editingItem])
@@ -66,7 +69,8 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
       additions: selectedAdditions,
       subtractions: selectedSubtractions,
       quantity: quantity,
-      note
+      note,
+      specialInstructions
     })
     onClose()
   }
@@ -106,26 +110,32 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] overflow-hidden"
+            transition={TRANSITION_ADD_EDIT_ITEM_MOBILE}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-80 overflow-hidden"
             onClick={onClose}
           />
           
-          <motion.div 
+          <motion.div
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-x-0 bottom-0 sm:bottom-auto sm:top-24 z-[70] bg-white rounded-t-2xl sm:rounded-2xl p-6 sm:max-w-lg sm:mx-auto max-h-[calc(100vh-6rem)] overflow-hidden"
+            className="fixed inset-x-0 bottom-0 sm:bottom-auto sm:top-10 z-80 p-6 bg-white rounded-t-2xl sm:rounded-2xl sm:max-w-lg sm:mx-auto max-h-[calc(100vh-6rem)] overflow-scroll"
           >
-            <div className="absolute right-0 top-0 pr-4 pt-4">
+            {/* Product image div */}
+            <div className="relative pb-3">
+              <img
+                src={`/images/${product.image_url}`}
+                alt={product.name}
+                className="w-full h-80 object-cover rounded-t-2xl sm:rounded-2xl"
+              />
               <button
                 type="button"
-                className="rounded-lg bg-white text-gray-400 hover:text-gray-500 cursor-pointer"
+                className="text-2xl absolute top-4 right-4 rounded-lg text-black hover:text-red-300 cursor-pointer"
                 onClick={onClose}
               >
                 <span className="sr-only">Close</span>
-                <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                <XMarkIcon className="h-8 w-10" aria-hidden="true"/>
               </button>
             </div>
 
@@ -176,8 +186,22 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
                 )}
 
                 <div>
-                  <label htmlFor="note" className="block text-sm font-medium text-gray-900">
+                  <label htmlFor="specialInstructions" className="block text-sm font-medium text-gray-900">
                     Special Instructions
+                  </label>
+                  <textarea
+                    id="specialInstructions"
+                    rows={3}
+                    className="p-2 mt-2 block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 resize-none"
+                    value={specialInstructions}
+                    onChange={(e) => setSpecialInstructions(e.target.value)}
+                    placeholder="Any special instructions for preparing this item?"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="note" className="block text-sm font-medium text-gray-900">
+                    Note
                   </label>
                   <textarea
                     id="note"
@@ -185,7 +209,7 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
                     className="p-2 mt-2 block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 resize-none"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    placeholder="Any special instructions for preparing this item?"
+                    placeholder="Add a note for this item"
                   />
                 </div>
 

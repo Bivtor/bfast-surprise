@@ -26,6 +26,7 @@ export interface Product {
   available: boolean;
   additions?: Addition[];
   subtractions?: Subtraction[];
+  category: string;
 }
 
 export interface CartAddition {
@@ -47,10 +48,11 @@ export interface CartItem {
   additions: CartAddition[];
   subtractions: CartSubtraction[];
   note: string;
+  specialInstructions: string;
   uniqueId: string;
 }
 
 export interface TipStructure {
   type: "percentage" | "flat";
   value: number;
-}{{}}
+}

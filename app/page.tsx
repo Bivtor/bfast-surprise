@@ -8,9 +8,9 @@ import { useEffect, useRef, ReactNode } from "react";
 import Navigation from "./components/Navigation";
 
 const CAROUSEL_IMAGES = [
-  { src: "/breakfast1.jpg", alt: "Delicious breakfast spread" },
-  { src: "/breakfast2.jpg", alt: "Fresh pastries and coffee" },
-  { src: "/breakfast3.jpg", alt: "Healthy breakfast bowl" },
+  { src: "/images/breakfast1.jpg", alt: "Delicious breakfast spread" },
+  { src: "/images/breakfast2.jpg", alt: "Fresh pastries and coffee" },
+  { src: "/images/breakfast3.jpg", alt: "Healthy breakfast bowl" },
 ];
 
 const REVIEWS = [
@@ -18,19 +18,19 @@ const REVIEWS = [
     name: "Sarah M.",
     rating: 5,
     text: "The surprise breakfast made my mom's birthday so special. Everything was perfect!",
-    image: "/breakfast1.jpg",
+    image: "/images/breakfast1.jpg",
   },
   {
     name: "John D.",
     rating: 5,
     text: "Amazing service and delicious food. Will definitely order again!",
-    image: "/breakfast2.jpg",
+    image: "/images/breakfast2.jpg",
   },
   {
     name: "Emily R.",
     rating: 5,
     text: "Such a unique and thoughtful way to brighten someone's morning.",
-    image: "/breakfast3.jpg",
+    image: "/images/breakfast3.jpg",
   },
 ];
 
@@ -77,14 +77,15 @@ export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Small delay to ensure smooth scrolling after navigation loads
-    const timer = setTimeout(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
       if (heroRef.current) {
         window.scrollTo({ top: heroRef.current.offsetTop, behavior: 'smooth' });
       }
-    }, 100);
-
-    return () => clearTimeout(timer);
+    });
   }, []);
 
   return (

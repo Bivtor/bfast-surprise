@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import strawberryimage from '@/public/strawberry.png';
+import strawberryimage from '@/public/icons/strawberry.png';
 
 export default function Footer() {
   return (

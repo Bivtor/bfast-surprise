@@ -20,7 +20,6 @@ export async function POST(req: Request) {
 
     // Create payment intent with the calculated total
     const paymentIntent = await stripe.paymentIntents.create({
-      capture_method: 'manual',
       amount: priceBreakdown.total,
       currency: 'usd',
       automatic_payment_methods: {

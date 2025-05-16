@@ -73,7 +73,15 @@ export default function CheckoutForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    console.log("payment submit pressed")
+    console.log("payment submit pressed");
+
+    // Use a stable timestamp for the order
+    const orderTimestamp = Math.floor(Date.now() / 1000) * 1000;
+
+    const order = {
+      createdAt: new Date(orderTimestamp).toISOString(),
+      // ...rest of the order data
+    };
 
     if (!stripe || !elements || !clientSecret) {
       return;
@@ -94,7 +102,7 @@ export default function CheckoutForm({
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `${window.location.origin}/success?amount=$}`,
+        return_url: `${window.location.origin}/success?amount=${getTotalPrice()}&date=${formData.deliveryDate}&time=${formData.deliveryTime}&address=${encodeURIComponent(formData.deliveryAddress)}&tip=${getTipAmount()}`,
       },
     });
 
