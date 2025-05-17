@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { XMarkIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { useCartStore } from '../../store/cartStore'
-import { Product, CartItem, CartAddition, CartSubtraction } from '../../types/product'
+import { Product, CartAddition, CartSubtraction } from '../../types/product'
 import { TRANSITION_ADD_EDIT_ITEM_MOBILE } from '@/app/constants/pricing'
 
 interface EditItemModalProps {
@@ -113,7 +113,7 @@ export default function EditItemModal({ isOpen, onClose, product, editingItem }:
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="fixed inset-x-0 bottom-0 sm:bottom-auto sm:top-10 z-80 p-6 bg-white rounded-t-2xl sm:rounded-2xl sm:max-w-lg sm:mx-auto max-h-[calc(100vh-6rem)] overflow-scroll"
           >
-            <div className="pb-3">
+            <div className="relative pb-3">
               <img
                 src={`/images/${product.image_url}`}
                 alt={product.name}
@@ -175,7 +175,7 @@ export default function EditItemModal({ isOpen, onClose, product, editingItem }:
                 )}
 
                 <div className="space-y-4">
-                  <div>
+                  <div className='m-2'>
                     <label htmlFor="specialInstructions" className="block text-sm font-medium text-gray-900">
                       Special Instructions
                     </label>
@@ -189,7 +189,7 @@ export default function EditItemModal({ isOpen, onClose, product, editingItem }:
                     />
                   </div>
 
-                  <div>
+                  <div className='m-2'>
                     <label htmlFor="note" className="block text-sm font-medium text-gray-900">
                       Note
                     </label>

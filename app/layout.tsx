@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: "have a berry good day!",
 };
 
+import ClientRootLayout from './components/ClientRootLayout';
+
 export default function RootLayout({
   children,
 }: {
@@ -27,8 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body className="antialiased text-foreground" suppressHydrationWarning>
-
-        {children}
+        <ClientRootLayout>
+          {children}
+        </ClientRootLayout>
       </body>
     </html>
   );

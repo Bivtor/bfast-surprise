@@ -89,7 +89,7 @@ export default function OrderSummaryContainer({
         </div>
 
         {/* Order Summary Content */}
-        <div className="flex-1 overflow-y-auto dark:bg-gray-200">
+        <div className={`flex-1 overflow-y-auto dark:bg-gray-200 ${items.length > 0 ? "": "rounded-b-2xl" } `}>
           <OrderSummary
             isOpen={isOpen}
             products={products}

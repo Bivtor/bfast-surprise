@@ -67,7 +67,7 @@ export default function BrowsePage() {
 
         {/* Mobile Cart Button */}
         <div className="fixed bottom-6 left-0 right-0 px-4 lg:hidden">
-          {isCartLoaded && (
+          {getTotalItems() > 0 && isCartLoaded && (
             <button
               onClick={() => {
                 lockScroll();
@@ -111,6 +111,8 @@ export default function BrowsePage() {
           )}
         </AnimatePresence>
       </main>
+      
+
     </div>
   )
 }

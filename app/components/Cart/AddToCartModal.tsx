@@ -185,7 +185,7 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
                   </div>
                 )}
 
-                <div>
+                <div className='m-2'>
                   <label htmlFor="specialInstructions" className="block text-sm font-medium text-gray-900">
                     Special Instructions
                   </label>
@@ -199,7 +199,7 @@ export default function AddToCartModal({ isOpen, onClose, product, editingItem }
                   />
                 </div>
 
-                <div>
+                <div className='m-2'>
                   <label htmlFor="note" className="block text-sm font-medium text-gray-900">
                     Note
                   </label>
