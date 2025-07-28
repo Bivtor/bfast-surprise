@@ -19,13 +19,15 @@
 }
 
 @keyframes carousel {
-   0% {
+  0% {
     opacity: 0;
   }
-  4%, 25% {
+  4%,
+  25% {
     opacity: 1;
   }
-  29%, 100% {
+  29%,
+  100% {
     opacity: 0;
   }
 }
@@ -50,6 +52,10 @@
 }
 
 .fade-in.visible {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.animate-fade-in {
   animation: fadeIn 1s ease-out forwards;
 }
 

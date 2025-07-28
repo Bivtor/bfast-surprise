@@ -8,7 +8,7 @@ import { TIP_PERCENTAGES } from "@/app/constants/pricing";
 import { useCartStore } from "@/app/store/cartStore";
 import CustomTipModal from "@/app/components/Checkout/CustomTipModal";
 
-const TEST_MODE = process.env.NODE_ENV === "development";
+const TEST_MODE = process.env.NODE_ENV === "production";
 
 const TEST_DATA = {
   purchaserEmail: "victorinaldi@ucla.edu",
@@ -44,14 +44,14 @@ export default function CheckoutForm({
     TEST_MODE
       ? TEST_DATA
       : {
-          purchaserEmail: "",
-          purchaserPhone: "",
-          recipientPhone: "",
-          deliveryDate: "",
-          deliveryTime: "",
-          deliveryAddress: "",
-          customNote: "",
-        }
+        purchaserEmail: "",
+        purchaserPhone: "",
+        recipientPhone: "",
+        deliveryDate: "",
+        deliveryTime: "",
+        deliveryAddress: "",
+        customNote: "",
+      }
   );
 
   const handleInputChange = (
@@ -130,7 +130,7 @@ export default function CheckoutForm({
   };
 
   const getCurrentTipDisplay = () => {
-      return (getTipAmount() / 100).toFixed(2); // Divide by 10000 because subtotal is in cents and we need to divide by 100 for percentage and 100 for display
+    return (getTipAmount() / 100).toFixed(2); // Divide by 10000 because subtotal is in cents and we need to divide by 100 for percentage and 100 for display
   };
 
   return (
@@ -283,11 +283,10 @@ export default function CheckoutForm({
               key={percentage}
               type="button"
               onClick={() => handleTipSelection(percentage)}
-              className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${
-                tip.type === "percentage" && tip.value === percentage
+              className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${tip.type === "percentage" && tip.value === percentage
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+                }`}
             >
               <span className="text-lg font-medium">{percentage}%</span>
               <span className="text-sm text-center ">${((getSubtotal() / 100) * (percentage / 100)).toFixed(2)}</span>
@@ -296,11 +295,10 @@ export default function CheckoutForm({
           <button
             type="button"
             onClick={() => setIsCustomTipModalOpen(true)}
-            className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${
-              tip.type === "flat"
+            className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${tip.type === "flat"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+              }`}
           >
             <span className="text-lg font-medium">Other</span>
             <span className="text-sm">${tip.type === "flat" ? getCurrentTipDisplay() : "0.00"}</span>
@@ -308,7 +306,7 @@ export default function CheckoutForm({
         </div>
       </div>
 
-      <CustomTipModal 
+      <CustomTipModal
         isOpen={isCustomTipModalOpen}
         onClose={() => setIsCustomTipModalOpen(false)}
         onSubmit={handleCustomTip}
@@ -341,7 +339,7 @@ export default function CheckoutForm({
         disabled={!stripe || loading}
         className="mt-6 w-full inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 hover:cursor-pointer disabled:opacity-50 transition-colors disabled:animate-pulse"
       >
-        {!loading ? `Pay $${(getTotalPrice()/100).toFixed(2)}` : "Processing..."}
+        {!loading ? `Pay $${(getTotalPrice() / 100).toFixed(2)}` : "Processing..."}
       </button>
     </form>
   );
