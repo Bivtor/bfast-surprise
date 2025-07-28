@@ -66,7 +66,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   </div>
                   <div className="flex-1 relative group aspect-square">
                     <img
-                      src={`/images/${product.image_url}`}
+                      src={`/images/${product.image_url.toLowerCase()}`}
                       alt={product.name}
                       className="h-full w-full object-cover object-center rounded-md transition-all duration-200"
                     />

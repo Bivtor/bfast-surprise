@@ -177,10 +177,11 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="relative h-96">
                 <Image
-                  src="/breakfast2.jpg"
+                  src="/images/breakfast2.jpg"
                   fill
                   alt="Breakfast spread"
                   className="rounded-2xl shadow-xl object-cover"
+                  priority
                 />
               </div>
               <div>
