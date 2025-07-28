@@ -175,13 +175,12 @@ export default function Home() {
         <section className="relative py-24 bg-white  dark:bg-black ">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div>
+              <div className="relative h-96">
                 <Image
                   src="/breakfast2.jpg"
-                  width={500}
-                  height={500}
+                  fill
                   alt="Breakfast spread"
-                  className="rounded-2xl shadow-xl"
+                  className="rounded-2xl shadow-xl object-cover"
                 />
               </div>
               <div>
