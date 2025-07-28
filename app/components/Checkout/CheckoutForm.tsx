@@ -8,7 +8,7 @@ import { TIP_PERCENTAGES } from "@/app/constants/pricing";
 import { useCartStore } from "@/app/store/cartStore";
 import CustomTipModal from "@/app/components/Checkout/CustomTipModal";
 
-const TEST_MODE = process.env.NODE_ENV === "production";
+const TEST_MODE = process.env.NEXT_PUBLIC_USE_TEST_DATA === "true";
 
 const TEST_DATA = {
   purchaserEmail: "victorinaldi@ucla.edu",
@@ -284,8 +284,8 @@ export default function CheckoutForm({
               type="button"
               onClick={() => handleTipSelection(percentage)}
               className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${tip.type === "percentage" && tip.value === percentage
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
             >
               <span className="text-lg font-medium">{percentage}%</span>
@@ -296,8 +296,8 @@ export default function CheckoutForm({
             type="button"
             onClick={() => setIsCustomTipModalOpen(true)}
             className={`flex flex-col items-center justify-center py-3 px-4 rounded-lg hover:cursor-pointer ${tip.type === "flat"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
           >
             <span className="text-lg font-medium">Other</span>
